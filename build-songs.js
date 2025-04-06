@@ -36,8 +36,8 @@ songFiles.forEach(file => {
     const song = JSON.parse(content);
 
     // Einfache Validierung
-    if (!song.id || !song.title || !song.notes) {
-      console.warn(`Warnung: Song in ${file} hat nicht alle erforderlichen Felder (id, title, notes)`);
+    if (!song.title || !song.notes) {
+      console.warn(`Warnung: Song in ${file} hat nicht alle erforderlichen Felder (title, notes)`);
     }
 
     songs.push(song);

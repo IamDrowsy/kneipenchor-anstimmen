@@ -1,6 +1,144 @@
 {
   "songs": [
     {
+      "title": "Alles nur geklaut",
+      "notes": {
+        "soprano": "E",
+        "alto": "H3",
+        "tenor": "G",
+        "bass": "E"
+      }
+    },
+    {
+      "title": "Arcade",
+      "notes": {
+        "soprano": "H",
+        "alto": "H",
+        "tenor": "G",
+        "bass": "D"
+      }
+    },
+    {
+      "title": "Beautiful",
+      "notes": {
+        "soprano": "A",
+        "alto": "F",
+        "tenor": "C5",
+        "bass": "F"
+      }
+    },
+    {
+      "title": "Don't dream it's over",
+      "notes": {
+        "soprano": "D",
+        "alto": "D",
+        "tenor": "H",
+        "bass": "G"
+      }
+    },
+    {
+      "title": "Don't Let Go (Love)",
+      "notes": {
+        "soprano": "H",
+        "alto": "H",
+        "tenor": "G",
+        "bass": "E"
+      }
+    },
+    {
+      "title": "Don't Look Back In Anger",
+      "notes": {
+        "soprano": "G",
+        "alto": "E",
+        "tenor": "C5",
+        "bass": "C"
+      }
+    },
+    {
+      "title": "Down to the river to pray",
+      "notes": {
+        "soprano": "C",
+        "alto": "A3",
+        "tenor": "F",
+        "bass": "C"
+      }
+    },
+    {
+      "title": "Dreaming of you",
+      "notes": {
+        "soprano": "Ab",
+        "alto": {
+          "Hoch": "F",
+          "Tief": "C"
+        },
+        "tenor": "-",
+        "bass": "F"
+      }
+    },
+    {
+      "title": "Du willst mich küssen",
+      "notes": {
+        "soprano": "F#",
+        "alto": "D",
+        "tenor": "-",
+        "bass": "D"
+      }
+    },
+    {
+      "title": "Fallin'",
+      "notes": {
+        "soprano": "D5",
+        "alto": "E",
+        "tenor": "G",
+        "bass": "E"
+      }
+    },
+    {
+      "title": "Freed from desire",
+      "notes": {
+        "soprano": "H",
+        "alto": "E",
+        "tenor": "A",
+        "bass": "A3"
+      }
+    },
+    {
+      "title": "Hard to say I'm sorry",
+      "notes": {
+        "soprano": "G#",
+        "alto": "G#",
+        "tenor": "H",
+        "bass": "E"
+      }
+    },
+    {
+      "title": "I'm still standing",
+      "notes": {
+        "soprano": "A",
+        "alto": "F",
+        "tenor": "D5",
+        "bass": "D"
+      }
+    },
+    {
+      "title": "Lauf davon",
+      "notes": {
+        "soprano": "A",
+        "alto": "D",
+        "tenor": "D5",
+        "bass": "-"
+      }
+    },
+    {
+      "title": "Lean On",
+      "notes": {
+        "soprano": "E",
+        "alto": "C",
+        "tenor": "A",
+        "bass": "F"
+      }
+    },
+    {
       "title": "Like A Prayer",
       "notes": {
         "soprano": "F",
@@ -17,11 +155,122 @@
         "tenor": "G",
         "bass": "C"
       }
+    },
+    {
+      "title": "Midnight City",
+      "notes": {
+        "soprano": "H",
+        "alto": "E",
+        "tenor": "G",
+        "bass": "C"
+      }
+    },
+    {
+      "title": "Mögen sich die Wege (irischer Segen)",
+      "notes": {
+        "soprano": "F#",
+        "alto": "D",
+        "tenor": "A",
+        "bass": "D"
+      }
+    },
+    {
+      "title": "Respect",
+      "notes": {
+        "soprano": "Eb5",
+        "alto": {
+          "Hoch": "H",
+          "Tief": "F"
+        },
+        "tenor": "D5",
+        "bass": "G"
+      }
+    },
+    {
+      "title": "Rolling In The Deep",
+      "notes": {
+        "soprano": "-",
+        "alto": "G",
+        "tenor": "G",
+        "bass": "C"
+      }
+    },
+    {
+      "title": "Sage Nein",
+      "notes": {
+        "soprano": "A",
+        "alto": "F",
+        "tenor": "D5",
+        "bass": "D"
+      }
+    },
+    {
+      "title": "Say Yes",
+      "notes": {
+        "soprano": "G",
+        "alto": "D3",
+        "tenor": "G",
+        "bass": "G"
+      }
+    },
+    {
+      "title": "Sixteen Tons",
+      "notes": {
+        "soprano": "E",
+        "alto": "E",
+        "tenor": "E5",
+        "bass": "E5"
+      }
+    },
+    {
+      "title": "Someone you loved",
+      "notes": {
+        "soprano": "H",
+        "alto": "D",
+        "tenor": "D5",
+        "bass": "G"
+      }
+    },
+    {
+      "title": "The Book of Love",
+      "notes": {
+        "soprano": "Eb",
+        "alto": "Eb",
+        "tenor": "Ab",
+        "bass": "C"
+      }
+    },
+    {
+      "title": "The Parting Glass",
+      "notes": {
+        "soprano": "A",
+        "alto": "A",
+        "tenor": "F",
+        "bass": "F"
+      }
+    },
+    {
+      "title": "Umbrella",
+      "notes": {
+        "soprano": "D",
+        "alto": "D",
+        "tenor": "H",
+        "bass": "G3"
+      }
+    },
+    {
+      "title": "Wuthering Heights",
+      "notes": {
+        "soprano": "C5",
+        "alto": "C",
+        "tenor": "A",
+        "bass": "F"
+      }
     }
   ],
   "meta": {
-    "count": 2,
-    "generatedAt": "2025-04-06T14:20:54.317Z",
-    "sourceFiles": 2
+    "count": 29,
+    "generatedAt": "2025-04-06T14:57:11.791Z",
+    "sourceFiles": 29
   }
 }
