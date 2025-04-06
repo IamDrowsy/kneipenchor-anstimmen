@@ -25,10 +25,10 @@ class AudioManager {
           type: 'triangle' // Klar und weniger aggressiv als 'square' oder 'sawtooth'
         },
         envelope: {
-          attack: 0.01,   // Schneller Einsatz
+          attack: 0.05,   // Schneller Einsatz
           decay: 0.1,     // Kurzer Decay für klaren Ton  
-          sustain: 0.8,   // Hoher Sustain für gutes Hören
-          release: 1.5    // Längeres Ausklingen für natürlicheren Klang
+          sustain: 0.4,   // Hoher Sustain für gutes Hören
+          release: 0.5    // Längeres Ausklingen für natürlicheren Klang
         },
         volume: -6        // Etwas leiser für angenehmere Lautstärke
       });
@@ -42,7 +42,7 @@ class AudioManager {
   }
 
   // Ton abspielen
-  async playNote(noteString, duration = "1n") {
+  async playNote(noteString, duration = "0.8") { // In sekunden
     // Bei erstem Aufruf initialisieren
     if (!this.initialized) {
       const success = await this.initialize();
