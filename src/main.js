@@ -1,8 +1,83 @@
 import './style.css'
 
+// Zuordnung von Voice-Keys zu Display-Namen
+const voiceTypes = [
+  { key: 'soprano', label: 'Sopran', class: 'soprano' },
+  { key: 'alto', label: 'Alt', class: 'alto' },
+  { key: 'tenor', label: 'Tenor', class: 'tenor' },
+  { key: 'bass', label: 'Bass', class: 'bass' }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
+  setupVoiceFilter();
 });
+
+// Filter-Funktion einrichten
+function setupVoiceFilter() {
+  // Filter-Einstellungen aus localStorage laden (falls vorhanden)
+  loadFilterSettings();
+
+  // Event-Listener für Filtercheckboxen
+  const checkboxes = document.querySelectorAll('.filter-option input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const voiceKey = this.dataset.voice;
+      toggleVoiceVisibility(voiceKey, this.checked);
+
+      // Einstellungen im localStorage speichern
+      saveFilterSettings();
+    });
+
+    // Initial die Sichtbarkeit basierend auf Checkbox-Status setzen
+    const voiceKey = checkbox.dataset.voice;
+    toggleVoiceVisibility(voiceKey, checkbox.checked);
+  });
+}
+
+// Sichtbarkeit einer Stimmgruppe umschalten
+function toggleVoiceVisibility(voiceKey, isVisible) {
+  // Spaltenüberschrift umschalten
+  const headerCell = document.querySelector(`th.voice-column.${voiceKey}`);
+  if (headerCell) {
+    headerCell.classList.toggle('hidden', !isVisible);
+  }
+
+  // Alle Zellen dieser Stimmgruppe umschalten (Desktop)
+  const cells = document.querySelectorAll(`td.voice-column.${voiceKey}`);
+  cells.forEach(cell => {
+    cell.classList.toggle('hidden', !isVisible);
+  });
+
+  // Mobile Layout: Einzelne Karten umschalten
+  const mobileCards = document.querySelectorAll(`.notes-row td.${voiceKey}`);
+  mobileCards.forEach(card => {
+    card.classList.toggle('hidden', !isVisible);
+  });
+}
+
+// Filter-Einstellungen im localStorage speichern
+function saveFilterSettings() {
+  const settings = {};
+  document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
+    settings[checkbox.dataset.voice] = checkbox.checked;
+  });
+  localStorage.setItem('voiceFilterSettings', JSON.stringify(settings));
+}
+
+// Filter-Einstellungen aus localStorage laden
+function loadFilterSettings() {
+  const savedSettings = localStorage.getItem('voiceFilterSettings');
+  if (savedSettings) {
+    const settings = JSON.parse(savedSettings);
+    document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
+      const voice = checkbox.dataset.voice;
+      if (voice in settings) {
+        checkbox.checked = settings[voice];
+      }
+    });
+  }
+}
 
 async function loadSongs() {
   try {
@@ -25,14 +100,6 @@ async function loadSongs() {
 function displaySongs(songs) {
   const songList = document.getElementById('song-list');
 
-  // Array von Stimmgruppen-Namen für Labels und Datenattribute
-  const voiceTypes = [
-    { key: 'soprano', label: 'Sopran' },
-    { key: 'alto', label: 'Alt' },
-    { key: 'tenor', label: 'Tenor' },
-    { key: 'bass', label: 'Bass' }
-  ];
-
   songs.forEach(song => {
     // Erste Zeile mit Liedtitel (überspannt alle 4 Spalten)
     const titleRow = document.createElement('tr');
@@ -49,8 +116,9 @@ function displaySongs(songs) {
     notesRow.className = 'notes-row';
 
     // Zellen für die Stimmgruppen
-    voiceTypes.forEach((voice, index) => {
+    voiceTypes.forEach(voice => {
       const cell = document.createElement('td');
+      cell.className = `voice-column ${voice.class}`;
 
       // Datenattribute für mobile Ansicht hinzufügen
       cell.dataset.label = voice.label;

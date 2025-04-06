@@ -10,15 +10,38 @@
     <h1>Chor Anfangstöne</h1>
     <p class="description">Wähle einen Anfangston zum Abspielen</p>
 
+    <!-- Filterbereich -->
+    <div class="filter-section">
+      <div class="filter-heading">Stimmgruppen anzeigen:</div>
+      <div class="filter-options">
+        <label class="filter-option">
+          <input type="checkbox" data-voice="soprano" checked>
+          <span class="filter-label soprano">Sopran</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-voice="alto" checked>
+          <span class="filter-label alto">Alt</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-voice="tenor" checked>
+          <span class="filter-label tenor">Tenor</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-voice="bass" checked>
+          <span class="filter-label bass">Bass</span>
+        </label>
+      </div>
+    </div>
+
     <div id="loading">Lade Lieder...</div>
 
     <table id="song-table" class="hidden">
       <thead>
         <tr>
-          <th>Sopran</th>
-          <th>Alt</th>
-          <th>Tenor</th>
-          <th>Bass</th>
+          <th class="voice-column soprano">Sopran</th>
+          <th class="voice-column alto">Alt</th>
+          <th class="voice-column tenor">Tenor</th>
+          <th class="voice-column bass">Bass</th>
         </tr>
       </thead>
       <tbody id="song-list">

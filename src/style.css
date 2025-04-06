@@ -224,3 +224,95 @@ td:nth-child(4) .play-button {
     color: #3498db; /* Bass */
   }
 }
+
+/* Filter-Sektion Styles */
+.filter-section {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.filter-heading {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-option input[type="checkbox"] {
+  margin-right: 5px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.filter-label {
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* Farben für Filter-Labels */
+.filter-label.soprano {
+  color: #e74c3c;
+}
+
+.filter-label.alto {
+  color: #f39c12;
+}
+
+.filter-label.tenor {
+  color: #2ecc71;
+}
+
+.filter-label.bass {
+  color: #3498db;
+}
+
+/* Versteckte Spalten */
+.voice-column.hidden,
+td.voice-column.hidden {
+  display: none;
+}
+
+/* Responsive-Anpassungen für den Filter */
+@media (max-width: 576px) {
+  .filter-options {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filter-option {
+    width: 100%;
+  }
+}
+
+/* Mobile Layout: Elementen kennzeichnen für Filterung */
+@media (max-width: 480px) {
+  .notes-row td.soprano,
+  .notes-row td.alto,
+  .notes-row td.tenor,
+  .notes-row td.bass {
+    display: block; /* Standard: anzeigen */
+  }
+
+  .notes-row td.soprano.hidden,
+  .notes-row td.alto.hidden,
+  .notes-row td.tenor.hidden,
+  .notes-row td.bass.hidden {
+    display: none; /* Bei Filter: ausblenden */
+  }
+}
