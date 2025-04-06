@@ -316,3 +316,84 @@ td.voice-column.hidden {
     display: none; /* Bei Filter: ausblenden */
   }
 }
+
+/* Suchbereich */
+.search-section {
+  margin-bottom: 20px;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#song-search {
+  flex: 1;
+  padding: 12px 40px 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 30px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#song-search:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.clear-search-btn.visible {
+  opacity: 1;
+}
+
+.clear-search-btn:hover {
+  color: #666;
+}
+
+/* Suchergebnisse */
+.search-results {
+  margin-top: 5px;
+  color: #666;
+  font-size: 0.9rem;
+  height: 20px;
+}
+
+/* Versteckte Songs (durch Suche ausgeblendet) */
+.song-hidden {
+  display: none;
+}
+
+/* Hervorhebung der Suchergebnisse */
+.highlight-match {
+  background-color: #fff3cd;
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+/* Responsive Anpassungen für die Suche */
+@media (max-width: 576px) {
+  #song-search {
+    padding: 10px 35px 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .clear-search-btn {
+    font-size: 1.3rem;
+    right: 12px;
+  }
+}

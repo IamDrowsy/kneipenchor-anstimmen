@@ -8,10 +8,109 @@ const voiceTypes = [
   { key: 'bass', label: 'Bass', class: 'bass' }
 ];
 
+// Referenz auf alle geladenen Songs für die Suche
+let allSongs = [];
+
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
   setupVoiceFilter();
+  setupSearch();
 });
+
+// Suchfunktionalität einrichten
+function setupSearch() {
+  const searchInput = document.getElementById('song-search');
+  const clearButton = document.getElementById('clear-search');
+  const searchResults = document.getElementById('search-results');
+
+  if (!searchInput || !clearButton || !searchResults) return;
+
+  // Event-Listener für die Eingabe
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.trim().toLowerCase();
+
+    // Clear-Button anzeigen/ausblenden
+    clearButton.classList.toggle('visible', searchTerm.length > 0);
+
+    // Suche ausführen
+    performSearch(searchTerm);
+  });
+
+  // Event-Listener für das Löschen der Suche
+  clearButton.addEventListener('click', function() {
+    searchInput.value = '';
+    clearButton.classList.remove('visible');
+    performSearch('');
+    searchInput.focus();
+  });
+
+  // Event-Listener für ESC-Taste zum Löschen
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      searchInput.value = '';
+      clearButton.classList.remove('visible');
+      performSearch('');
+    }
+  });
+}
+
+// Durchführung der Suche
+function performSearch(searchTerm) {
+  const songRows = document.querySelectorAll('.title-row');
+  const resultInfo = document.getElementById('search-results');
+
+  // Alle Lieder durchsuchen
+  let matchCount = 0;
+
+  songRows.forEach(row => {
+    const titleCell = row.querySelector('.song-title');
+    const title = titleCell.textContent.toLowerCase();
+    const nextRow = row.nextElementSibling; // Die Zeile mit den Buttons
+
+    // Prüfen, ob der Titel den Suchbegriff enthält
+    const isMatch = title.includes(searchTerm);
+
+    // Zeilen ein-/ausblenden
+    row.classList.toggle('song-hidden', searchTerm !== '' && !isMatch);
+    if (nextRow) {
+      nextRow.classList.toggle('song-hidden', searchTerm !== '' && !isMatch);
+    }
+
+    // Zählen der Treffer
+    if (isMatch && searchTerm !== '') {
+      matchCount++;
+
+      // Suchbegriff im Titel hervorheben (nur wenn etwas gesucht wird)
+      if (searchTerm) {
+        const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+        const highlightedTitle = titleCell.textContent.replace(
+          regex, 
+          '<span class="highlight-match">$1</span>'
+        );
+        titleCell.innerHTML = highlightedTitle;
+      } else {
+        titleCell.textContent = titleCell.textContent; // Zurücksetzen
+      }
+    } else if (searchTerm === '') {
+      // Hervorhebungen entfernen wenn Suche leer ist
+      titleCell.textContent = titleCell.textContent;
+    }
+  });
+
+  // Suchinformationen anzeigen
+  if (searchTerm === '') {
+    resultInfo.textContent = '';
+  } else if (matchCount === 0) {
+    resultInfo.textContent = 'Keine Lieder gefunden.';
+  } else {
+    resultInfo.textContent = `${matchCount} Lied${matchCount !== 1 ? 'er' : ''} gefunden.`;
+  }
+}
+
+// Hilfsfunktion zum Escapen von Sonderzeichen in RegExp
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 // Filter-Funktion einrichten
 function setupVoiceFilter() {
@@ -78,24 +177,25 @@ function loadFilterSettings() {
     });
   }
 }
-
 async function loadSongs() {
-  try {
-    const response = await fetch('/songs.json');
-    if (!response.ok) {
-      throw new Error('Konnte Lieder nicht laden');
+    try {
+      const response = await fetch('/songs.json');
+      if (!response.ok) {
+        throw new Error('Konnte Lieder nicht laden');
+      }
+  
+      const data = await response.json();
+      allSongs = data.songs; // Alle Songs für die Suche speichern
+      displaySongs(data.songs);
+  
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('song-table').classList.remove('hidden');
+    } catch (error) {
+      console.error('Fehler beim Laden der Lieder:', error);
+      document.getElementById('loading').textContent = 'Fehler beim Laden der Lieder. Bitte Seite neu laden.';
     }
-
-    const data = await response.json();
-    displaySongs(data.songs);
-
-    document.getElementById('loading').classList.add('hidden');
-    document.getElementById('song-table').classList.remove('hidden');
-  } catch (error) {
-    console.error('Fehler beim Laden der Lieder:', error);
-    document.getElementById('loading').textContent = 'Fehler beim Laden der Lieder. Bitte Seite neu laden.';
   }
-}
+  
 
 function displaySongs(songs) {
   const songList = document.getElementById('song-list');
