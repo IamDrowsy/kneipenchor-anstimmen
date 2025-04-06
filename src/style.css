@@ -1,3 +1,4 @@
+/* Basis-Styles (bereits vorhanden) */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -24,6 +25,7 @@ h1 {
   margin-bottom: 30px;
 }
 
+/* Tabellen-Styles */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -49,12 +51,13 @@ tr:nth-child(even) {
 .song-title {
   text-align: center;
   font-weight: bold;
-  background-color: #f0f8ff; /* Helles Blau für Titel */
+  background-color: #f0f8ff;
   padding: 10px;
   font-size: 1.1em;
   border-bottom: 2px solid #3498db;
 }
 
+/* Button-Styles */
 .play-button {
   background-color: #3498db;
   color: white;
@@ -63,14 +66,12 @@ tr:nth-child(even) {
   padding: 8px 12px;
   cursor: pointer;
   transition: background-color 0.3s;
+  min-width: 80px;
 }
 
 .play-button:hover {
-  background-color: #2980b9;
-}
-
-.hidden {
-  display: none;
+  filter: brightness(90%);
+  transform: scale(1.05);
 }
 
 /* Für Gruppen von Buttons (Hoch/Tief) */
@@ -80,12 +81,7 @@ tr:nth-child(even) {
   gap: 5px;
 }
 
-.button-group .play-button {
-  margin: 0;
-  font-size: 0.9em;
-}
-
-/* Farben für verschiedene Stimmgruppen (angepasst für 4-Spalten-Layout) */
+/* Farben für verschiedene Stimmgruppen */
 td:nth-child(1) .play-button {
   background-color: #e74c3c; /* Sopran */
 }
@@ -102,13 +98,129 @@ td:nth-child(4) .play-button {
   background-color: #3498db; /* Bass */
 }
 
-/* Hover-Effekte für Buttons */
-.play-button:hover {
-  filter: brightness(90%);
-  transform: scale(1.05);
+/* Hilfklassen */
+.hidden {
+  display: none;
 }
 
-/* Abstand zwischen Liedern */
-tr.title-row + tr.notes-row {
-  border-bottom: 8px solid #f5f5f5;
+/* RESPONSIVE DESIGN FÜR MOBILE GERÄTE */
+
+/* Tablets und kleinere Desktops */
+@media (max-width: 768px) {
+  #app {
+    padding: 15px;
+  }
+
+  th, td {
+    padding: 8px;
+  }
+
+  .play-button {
+    padding: 8px;
+    min-width: 70px;
+    font-size: 0.9em;
+  }
+}
+
+/* Smartphones (Querformat) */
+@media (max-width: 576px) {
+  body {
+    padding: 10px;
+  }
+
+  #app {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 1.6em;
+  }
+
+  .description {
+    font-size: 0.9em;
+  }
+
+  /* Buttons noch größer für Touch-Bedienung */
+  .play-button {
+    padding: 10px;
+    min-width: 60px;
+    margin-bottom: 5px;
+    font-size: 1em; /* Größerer Text für bessere Lesbarkeit */
+  }
+
+  /* Mehr Platz für Buttons */
+  th, td {
+    padding: 10px 5px;
+  }
+}
+
+/* Smartphones (Hochformat) - Karten-Layout statt Tabelle */
+@media (max-width: 480px) {
+  /* Ändern des Tabellenlayouts für sehr kleine Bildschirme */
+  thead {
+    display: none; /* Tabellenkopf ausblenden */
+  }
+
+  table, tbody, tr, td {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+
+  /* Song-Titel für mobiles Layout */
+  .song-title {
+    border: 1px solid #ddd;
+    border-radius: 5px 5px 0 0;
+    margin-top: 20px;
+  }
+
+  /* Jede Stimmgruppe bekommt eine eigene Karte */
+  .notes-row td {
+    margin-bottom: 2px;
+    text-align: left;
+    padding: 10px;
+    position: relative;
+    border: 1px solid #ddd;
+    border-top: none;
+  }
+
+  .notes-row td:last-child {
+    border-radius: 0 0 5px 5px;
+    margin-bottom: 0;
+  }
+
+  /* Label für jede Stimmgruppe hinzufügen */
+  .notes-row td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  /* Buttons auf volle Breite setzen */
+  .play-button, .button-group {
+    width: 100%;
+    margin-top: 5px;
+  }
+
+  .button-group .play-button {
+    margin-bottom: 5px;
+  }
+
+  /* Farben der Labels statt Buttons für Stimmgruppen */
+  .notes-row td:nth-child(1)::before {
+    color: #e74c3c; /* Sopran */
+  }
+
+  .notes-row td:nth-child(2)::before {
+    color: #f39c12; /* Alt */
+  }
+
+  .notes-row td:nth-child(3)::before {
+    color: #2ecc71; /* Tenor */
+  }
+
+  .notes-row td:nth-child(4)::before {
+    color: #3498db; /* Bass */
+  }
 }

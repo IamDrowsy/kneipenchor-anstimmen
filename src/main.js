@@ -25,6 +25,14 @@ async function loadSongs() {
 function displaySongs(songs) {
   const songList = document.getElementById('song-list');
 
+  // Array von Stimmgruppen-Namen für Labels und Datenattribute
+  const voiceTypes = [
+    { key: 'soprano', label: 'Sopran' },
+    { key: 'alto', label: 'Alt' },
+    { key: 'tenor', label: 'Tenor' },
+    { key: 'bass', label: 'Bass' }
+  ];
+
   songs.forEach(song => {
     // Erste Zeile mit Liedtitel (überspannt alle 4 Spalten)
     const titleRow = document.createElement('tr');
@@ -40,16 +48,19 @@ function displaySongs(songs) {
     const notesRow = document.createElement('tr');
     notesRow.className = 'notes-row';
 
-    // Zellen für die Stimmgruppen direkt ohne leere erste Zelle
-    ['soprano', 'alto', 'tenor', 'bass'].forEach(voice => {
+    // Zellen für die Stimmgruppen
+    voiceTypes.forEach((voice, index) => {
       const cell = document.createElement('td');
 
+      // Datenattribute für mobile Ansicht hinzufügen
+      cell.dataset.label = voice.label;
+
       // Prüfen, ob es sich um ein einfaches Note-Format oder Hoch/Tief-Format handelt
-      const noteValue = song.notes[voice];
+      const noteValue = song.notes[voice.key];
 
       if (typeof noteValue === 'string') {
         // Einfacher Ton
-        const button = createPlayButton(noteValue, voice, song.id, song.title);
+        const button = createPlayButton(noteValue, voice.key, song.id, song.title);
         cell.appendChild(button);
       } else {
         // Mehrere Töne (Hoch/Tief)
@@ -58,7 +69,7 @@ function displaySongs(songs) {
 
         // Für jeden Untertyp einen Button erstellen
         for (const [type, note] of Object.entries(noteValue)) {
-          const button = createPlayButton(note, voice, song.id, song.title, type);
+          const button = createPlayButton(note, voice.key, song.id, song.title, type);
           button.dataset.voiceType = type;
           buttonContainer.appendChild(button);
         }
