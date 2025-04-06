@@ -163,7 +163,6 @@ td:nth-child(4) .play-button {
 
   table, tbody, tr, td {
     display: block;
-    width: 100%;
     border: none;
   }
 
