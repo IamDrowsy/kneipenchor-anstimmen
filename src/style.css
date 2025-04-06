@@ -431,3 +431,117 @@ td:nth-child(4) .play-button.playing {
   opacity: 0.7;
   cursor: wait;
 }
+
+
+/* Einklappbare Sektion */
+.collapsible-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #f7f7f7;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.arrow-icon {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.section-content {
+  max-height: 300px; /* Initiale Höhe, wird animiert */
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 15px;
+}
+
+/* Zustände für eingeklappten Bereich */
+.collapsible-section.collapsed .section-content {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top: none;
+}
+
+.collapsible-section.collapsed .arrow-icon {
+  transform: rotate(-90deg);
+}
+
+.collapsible-section.collapsed .section-header {
+  border-radius: 8px;
+  border-bottom: none;
+}
+
+/* Verbesserte Stimmgruppenfilter-Styles */
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.filter-label {
+  margin-left: 6px;
+  font-weight: 500;
+}
+
+/* Screen-Reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Mobile Anpassungen */
+@media (max-width: 767px) {
+  .section-header {
+    padding: 10px 12px;
+  }
+
+  .section-content {
+    padding: 10px;
+  }
+
+  .filter-options {
+    gap: 8px;
+  }
+}

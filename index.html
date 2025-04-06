@@ -19,10 +19,20 @@
       <div id="search-results" class="search-results"></div>
     </div>
 
-    <!-- Filterbereich -->
-    <div class="filter-section">
-      <div class="filter-heading">Stimmgruppen anzeigen:</div>
+<!-- Filter-Sektion mit Collapse-Funktionalität -->
+<div class="filter-section collapsible-section">
+    <div class="section-header" id="filter-header">
+      <h3>Stimmgruppenfilter</h3>
+      <button class="toggle-button" aria-expanded="true" aria-controls="filter-content">
+        <span class="arrow-icon">▼</span>
+        <span class="sr-only">Filter ein-/ausklappen</span>
+      </button>
+    </div>
+  
+    <div class="section-content" id="filter-content">
+      <!-- Hier kommen deine bestehenden Filter-Optionen -->
       <div class="filter-options">
+        <!-- Bestehende Checkboxen für die Stimmgruppen -->
         <label class="filter-option">
           <input type="checkbox" data-voice="soprano" checked>
           <span class="filter-label soprano">Sopran</span>
@@ -41,6 +51,7 @@
         </label>
       </div>
     </div>
+  </div>
 
     <div id="loading">Lade Lieder...</div>
 

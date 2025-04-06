@@ -14,8 +14,8 @@ let allSongs = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
-  setupVoiceFilter();
   setupSearch();
+  setupVoiceFilter();
 });
 
 // Suchfunktionalität einrichten
@@ -115,6 +115,9 @@ function escapeRegExp(string) {
 
 // Filter-Funktion einrichten
 function setupVoiceFilter() {
+  // Einklappbare Funktionalität hinzufügen
+  setupCollapsibleSections();
+
   // Filter-Einstellungen aus localStorage laden (falls vorhanden)
   loadFilterSettings();
 
@@ -138,6 +141,7 @@ function setupVoiceFilter() {
 // Sichtbarkeit einer Stimmgruppe umschalten
 function toggleVoiceVisibility(voiceKey, isVisible) {
   // Spaltenüberschrift umschalten
+  console.log(voiceKey, isVisible)
   const headerCell = document.querySelector(`th.voice-column.${voiceKey}`);
   if (headerCell) {
     headerCell.classList.toggle('hidden', !isVisible);
@@ -252,6 +256,51 @@ function displaySongs(songs) {
     songList.appendChild(notesRow);
   });
 }
+
+// Funktionalität für einklappbare Bereiche
+function setupCollapsibleSections() {
+    const collapsibleSections = document.querySelectorAll('.collapsible-section');
+  
+    collapsibleSections.forEach(section => {
+      const header = section.querySelector('.section-header');
+      const toggleButton = section.querySelector('.toggle-button');
+      const content = section.querySelector('.section-content');
+  
+      // Lädt gespeicherten Zustand (optional)
+      const sectionId = section.id || 'filter-section';
+      const isCollapsed = localStorage.getItem(`${sectionId}-collapsed`) === 'true';
+  
+      // Initialen Zustand setzen
+      if (isCollapsed) {
+        section.classList.add('collapsed');
+        toggleButton.setAttribute('aria-expanded', 'false');
+      }
+  
+      // Event-Listener für Klick auf Header oder Button
+      header.addEventListener('click', () => toggleSection(section));
+      if (toggleButton) {
+        toggleButton.addEventListener('click', (e) => {
+          e.stopPropagation(); // Verhindert doppeltes Auslösen
+          toggleSection(section);
+        });
+      }
+    });
+  }
+  
+  // Funktion zum Umschalten des Bereichs
+  function toggleSection(section) {
+    const isCollapsed = section.classList.toggle('collapsed');
+    const toggleButton = section.querySelector('.toggle-button');
+    const sectionId = section.id || 'filter-section';
+  
+    if (toggleButton) {
+      toggleButton.setAttribute('aria-expanded', !isCollapsed);
+    }
+  
+    // Zustand speichern (optional)
+    localStorage.setItem(`${sectionId}-collapsed`, isCollapsed);
+  }
+
 
 // Hilfsfunktion zum Erstellen eines Wiedergabe-Buttons
 function createPlayButton(note, voice, songId, songTitle, voiceType = null) {
