@@ -14,9 +14,9 @@
         "id": 2,
         "title": "Hallelujah (Händel)",
         "notes": {
-          "soprano": "D5",
+          "soprano": {"Hoch": "F5", "Tief": "D5"},
           "alto": "A4",
-          "tenor": "F#4",
+          "tenor": {"Hoch": "F#4", "Tief": "D4"},
           "bass": "D3"
         }
       },
@@ -25,9 +25,9 @@
         "title": "Ave Maria (Schubert)",
         "notes": {
           "soprano": "B4",
-          "alto": "G4",
+          "alto": {"Hoch": "G4", "Tief": "E4"},
           "tenor": "D4",
-          "bass": "G2"
+          "bass": {"Hoch": "G2", "Tief": "E2"}
         }
       },
       {
@@ -44,11 +44,12 @@
         "id": 5,
         "title": "Freude schöner Götterfunken",
         "notes": {
-          "soprano": "E5",
-          "alto": "B4",
+          "soprano": {"Hoch": "G5", "Tief": "E5"},
+          "alto": {"Hoch": "D5", "Tief": "B4"},
           "tenor": "G4",
           "bass": "E3"
         }
       }
     ]
   }
+  

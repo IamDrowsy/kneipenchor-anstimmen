@@ -1,11 +1,9 @@
 import './style.css'
 
-// Warten bis DOM geladen ist
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
 });
 
-// Lieder aus JSON laden
 async function loadSongs() {
   try {
     const response = await fetch('/songs.json');
@@ -16,7 +14,6 @@ async function loadSongs() {
     const data = await response.json();
     displaySongs(data.songs);
 
-    // Loading-Anzeige ausblenden, Tabelle einblenden
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('song-table').classList.remove('hidden');
   } catch (error) {
@@ -25,7 +22,6 @@ async function loadSongs() {
   }
 }
 
-// Lieder in Tabelle anzeigen
 function displaySongs(songs) {
   const songList = document.getElementById('song-list');
 
@@ -49,23 +45,57 @@ function displaySongs(songs) {
     // Zellen für die Stimmgruppen
     ['soprano', 'alto', 'tenor', 'bass'].forEach(voice => {
       const cell = document.createElement('td');
-      const button = document.createElement('button');
-      button.className = 'play-button';
-      button.textContent = `${song.notes[voice]} spielen`;
-      button.dataset.note = song.notes[voice];
-      button.dataset.voice = voice;
-      button.dataset.songId = song.id;
 
-      // Event-Listener für Klick hinzufügen (später wird hier die Tonwiedergabe implementiert)
-      button.addEventListener('click', () => {
-        console.log(`Spiele Ton ${song.notes[voice]} für ${voice} in Lied "${song.title}"`);
-        // Hier wird später die Tonwiedergabe-Funktion aufgerufen
-      });
+      // Prüfen, ob es sich um ein einfaches Note-Format oder Hoch/Tief-Format handelt
+      const noteValue = song.notes[voice];
 
-      cell.appendChild(button);
+      if (typeof noteValue === 'string') {
+        // Einfacher Ton
+        const button = createPlayButton(noteValue, voice, song.id, song.title);
+        cell.appendChild(button);
+      } else {
+        // Mehrere Töne (Hoch/Tief)
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'button-group';
+
+        // Für jeden Untertyp einen Button erstellen
+        for (const [type, note] of Object.entries(noteValue)) {
+          const button = createPlayButton(note, voice, song.id, song.title, type);
+          button.dataset.voiceType = type;
+          buttonContainer.appendChild(button);
+        }
+
+        cell.appendChild(buttonContainer);
+      }
+
       notesRow.appendChild(cell);
     });
 
     songList.appendChild(notesRow);
   });
+}
+
+// Hilfsfunktion zum Erstellen eines Wiedergabe-Buttons
+function createPlayButton(note, voice, songId, songTitle, voiceType = null) {
+  const button = document.createElement('button');
+  button.className = 'play-button';
+
+  // Button-Text basierend auf Vorhandensein von voiceType anpassen
+  if (voiceType) {
+    button.textContent = `${voiceType}: ${note}`;
+  } else {
+    button.textContent = note;
+  }
+
+  button.dataset.note = note;
+  button.dataset.voice = voice;
+  button.dataset.songId = songId;
+
+  button.addEventListener('click', () => {
+    const voiceInfo = voiceType ? `${voice} (${voiceType})` : voice;
+    console.log(`Spiele Ton ${note} für ${voiceInfo} in Lied "${songTitle}"`);
+    // Hier wird später die Tonwiedergabe-Funktion implementiert
+  });
+
+  return button;
 }

@@ -67,3 +67,39 @@ tr:nth-child(even) {
 .hidden {
   display: none;
 }
+
+/* Für Gruppen von Buttons (Hoch/Tief) */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.button-group .play-button {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+/* Farben für verschiedene Stimmgruppen */
+td:nth-child(2) .play-button {
+  background-color: #e74c3c; /* Sopran */
+}
+
+td:nth-child(3) .play-button {
+  background-color: #f39c12; /* Alt */
+}
+
+td:nth-child(4) .play-button {
+  background-color: #2ecc71; /* Tenor */
+}
+
+td:nth-child(5) .play-button {
+  background-color: #3498db; /* Bass */
+}
+
+/* Hover-Effekte für Buttons */
+.play-button:hover {
+  filter: brightness(90%);
+  transform: scale(1.05);
+}
+
