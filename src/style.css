@@ -397,3 +397,38 @@ td.voice-column.hidden {
     right: 12px;
   }
 }
+
+/* Button-Animation beim Abspielen */
+.play-button.playing {
+  animation: playing-pulse 0.8s ease-in-out;
+  filter: brightness(110%);
+}
+
+@keyframes playing-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Spezifische Glühen-Effekte für verschiedene Stimmgruppen */
+td:nth-child(1) .play-button.playing {
+  box-shadow: 0 0 8px 2px rgba(231, 76, 60, 0.5); /* Sopran */
+}
+
+td:nth-child(2) .play-button.playing {
+  box-shadow: 0 0 8px 2px rgba(243, 156, 18, 0.5); /* Alt */
+}
+
+td:nth-child(3) .play-button.playing {
+  box-shadow: 0 0 8px 2px rgba(46, 204, 113, 0.5); /* Tenor */
+}
+
+td:nth-child(4) .play-button.playing {
+  box-shadow: 0 0 8px 2px rgba(52, 152, 219, 0.5); /* Bass */
+}
+
+/* Deaktivierte Schaltflächen während der Wiedergabe */
+.play-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}

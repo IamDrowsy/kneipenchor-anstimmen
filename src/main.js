@@ -1,4 +1,5 @@
 import './style.css'
+import audioManager from './audio-manager.js';
 
 // Zuordnung von Voice-Keys zu Display-Namen
 const voiceTypes = [
@@ -254,25 +255,55 @@ function displaySongs(songs) {
 
 // Hilfsfunktion zum Erstellen eines Wiedergabe-Buttons
 function createPlayButton(note, voice, songId, songTitle, voiceType = null) {
-  const button = document.createElement('button');
-  button.className = 'play-button';
-
-  // Button-Text basierend auf Vorhandensein von voiceType anpassen
-  if (voiceType) {
-    button.textContent = `${voiceType}: ${note}`;
-  } else {
-    button.textContent = note;
+    const button = document.createElement('button');
+    button.className = 'play-button';
+  
+    // Button-Text basierend auf Vorhandensein von voiceType anpassen
+    if (voiceType) {
+      button.textContent = `${voiceType}: ${note}`;
+    } else {
+      button.textContent = note;
+    }
+  
+    button.dataset.note = note;
+    button.dataset.voice = voice;
+    button.dataset.songId = songId;
+  
+    button.addEventListener('click', async () => {
+      // Verhindere mehrfaches Klicken
+      if (button.disabled) return;
+  
+      const voiceInfo = voiceType ? `${voice} (${voiceType})` : voice;
+      console.log(`Spiele Ton ${note} für ${voiceInfo} in Lied "${songTitle}"`);
+  
+      // Visuelles Feedback
+      button.disabled = true;
+      audioManager.updatePlayingStatus(button, true);
+  
+      // Ton abspielen
+      const success = await audioManager.playNote(note);
+  
+      // Nach 800ms zurücksetzen (passend zur Animation)
+      setTimeout(() => {
+        button.disabled = false;
+        audioManager.updatePlayingStatus(button, false);
+      }, 800);
+  
+      // Fehlerbehandlung
+      if (!success) {
+        console.error(`Fehler beim Abspielen von ${note}`);
+        alert('Tonwiedergabe nicht möglich. Bitte aktivieren Sie die Audioausgabe in Ihrem Browser und klicken Sie erneut.');
+      }
+    });
+  
+    return button;
   }
-
-  button.dataset.note = note;
-  button.dataset.voice = voice;
-  button.dataset.songId = songId;
-
-  button.addEventListener('click', () => {
-    const voiceInfo = voiceType ? `${voice} (${voiceType})` : voice;
-    console.log(`Spiele Ton ${note} für ${voiceInfo} in Lied "${songTitle}"`);
-    // Hier wird später die Tonwiedergabe-Funktion implementiert
-  });
-
-  return button;
-}
+  
+  // Audio-Initialisierung bei erster Benutzerinteraktion
+  document.addEventListener('click', async () => {
+    if (!audioManager.initialized) {
+      console.log('Initialisiere Audio nach Benutzerinteraktion');
+      await audioManager.initialize();
+    }
+  }, { once: true }); // once: true sorgt dafür, dass der Listener nur einmal ausgeführt wird
+  
