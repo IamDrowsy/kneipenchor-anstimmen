@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chor Anfangstöne</title>
+</head>
+<body>
+  <div id="app">
+    <h1>Chor Anfangstöne</h1>
+    <p class="description">Wähle einen Anfangston zum Abspielen</p>
+
+    <div id="loading">Lade Lieder...</div>
+
+    <table id="song-table" class="hidden">
+      <thead>
+        <tr>
+          <th>Liedtitel</th>
+          <th>Sopran</th>
+          <th>Alt</th>
+          <th>Tenor</th>
+          <th>Bass</th>
+        </tr>
+      </thead>
+      <tbody id="song-list">
+        <!-- Songs werden hier via JavaScript eingefügt -->
+      </tbody>
+    </table>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

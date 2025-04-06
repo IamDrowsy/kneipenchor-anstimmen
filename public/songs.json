@@ -1,0 +1,54 @@
+{
+    "songs": [
+      {
+        "id": 1,
+        "title": "Amazing Grace",
+        "notes": {
+          "soprano": "C5",
+          "alto": "G4",
+          "tenor": "E4",
+          "bass": "C3"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Hallelujah (Händel)",
+        "notes": {
+          "soprano": "D5",
+          "alto": "A4",
+          "tenor": "F#4",
+          "bass": "D3"
+        }
+      },
+      {
+        "id": 3,
+        "title": "Ave Maria (Schubert)",
+        "notes": {
+          "soprano": "B4",
+          "alto": "G4",
+          "tenor": "D4",
+          "bass": "G2"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Stille Nacht",
+        "notes": {
+          "soprano": "G4",
+          "alto": "D4",
+          "tenor": "B3",
+          "bass": "G2"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Freude schöner Götterfunken",
+        "notes": {
+          "soprano": "E5",
+          "alto": "B4",
+          "tenor": "G4",
+          "bass": "E3"
+        }
+      }
+    ]
+  }
