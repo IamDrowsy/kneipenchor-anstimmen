@@ -45,9 +45,14 @@ tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
+/* Titel-Zelle für Lieder */
 .song-title {
-  text-align: left;
+  text-align: center;
   font-weight: bold;
+  background-color: #f0f8ff; /* Helles Blau für Titel */
+  padding: 10px;
+  font-size: 1.1em;
+  border-bottom: 2px solid #3498db;
 }
 
 .play-button {
@@ -80,20 +85,20 @@ tr:nth-child(even) {
   font-size: 0.9em;
 }
 
-/* Farben für verschiedene Stimmgruppen */
-td:nth-child(2) .play-button {
+/* Farben für verschiedene Stimmgruppen (angepasst für 4-Spalten-Layout) */
+td:nth-child(1) .play-button {
   background-color: #e74c3c; /* Sopran */
 }
 
-td:nth-child(3) .play-button {
+td:nth-child(2) .play-button {
   background-color: #f39c12; /* Alt */
 }
 
-td:nth-child(4) .play-button {
+td:nth-child(3) .play-button {
   background-color: #2ecc71; /* Tenor */
 }
 
-td:nth-child(5) .play-button {
+td:nth-child(4) .play-button {
   background-color: #3498db; /* Bass */
 }
 
@@ -103,3 +108,7 @@ td:nth-child(5) .play-button {
   transform: scale(1.05);
 }
 
+/* Abstand zwischen Liedern */
+tr.title-row + tr.notes-row {
+  border-bottom: 8px solid #f5f5f5;
+}

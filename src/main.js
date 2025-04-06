@@ -26,23 +26,21 @@ function displaySongs(songs) {
   const songList = document.getElementById('song-list');
 
   songs.forEach(song => {
-    // Erste Zeile mit Liedtitel
+    // Erste Zeile mit Liedtitel (überspannt alle 4 Spalten)
     const titleRow = document.createElement('tr');
+    titleRow.className = 'title-row';
     const titleCell = document.createElement('td');
     titleCell.textContent = song.title;
     titleCell.className = 'song-title';
-    titleCell.colSpan = 5;
+    titleCell.colSpan = 4; // Überspannt alle 4 Spalten für Stimmgruppen
     titleRow.appendChild(titleCell);
     songList.appendChild(titleRow);
 
     // Zweite Zeile mit Buttons für die Stimmlagen
     const notesRow = document.createElement('tr');
+    notesRow.className = 'notes-row';
 
-    // Leere Zelle für die Titelposition in der zweiten Zeile
-    const emptyCell = document.createElement('td');
-    notesRow.appendChild(emptyCell);
-
-    // Zellen für die Stimmgruppen
+    // Zellen für die Stimmgruppen direkt ohne leere erste Zelle
     ['soprano', 'alto', 'tenor', 'bass'].forEach(voice => {
       const cell = document.createElement('td');
 
