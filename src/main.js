@@ -14,8 +14,6 @@ let allSongs = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
-  setupSearch();
-  setupVoiceFilter();
 });
 
 // Suchfunktionalität einrichten
@@ -195,6 +193,8 @@ async function loadSongs() {
   
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('song-table').classList.remove('hidden');
+      setupSearch();
+      setupVoiceFilter();
     } catch (error) {
       console.error('Fehler beim Laden der Lieder:', error);
       document.getElementById('loading').textContent = 'Fehler beim Laden der Lieder. Bitte Seite neu laden.';
