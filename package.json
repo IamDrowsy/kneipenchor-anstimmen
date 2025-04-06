@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build-songs": "node build-songs.js",
+    "build": "npm run build-songs && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {

@@ -1,55 +1,27 @@
 {
-    "songs": [
-      {
-        "id": 1,
-        "title": "Amazing Grace",
-        "notes": {
-          "soprano": "C5",
-          "alto": "G4",
-          "tenor": "E4",
-          "bass": "C3"
-        }
-      },
-      {
-        "id": 2,
-        "title": "Hallelujah (Händel)",
-        "notes": {
-          "soprano": {"Hoch": "F5", "Tief": "D5"},
-          "alto": "A4",
-          "tenor": {"Hoch": "F#4", "Tief": "D4"},
-          "bass": "D3"
-        }
-      },
-      {
-        "id": 3,
-        "title": "Ave Maria (Schubert)",
-        "notes": {
-          "soprano": "B4",
-          "alto": {"Hoch": "G4", "Tief": "E4"},
-          "tenor": "D4",
-          "bass": {"Hoch": "G2", "Tief": "E2"}
-        }
-      },
-      {
-        "id": 4,
-        "title": "Stille Nacht",
-        "notes": {
-          "soprano": "G4",
-          "alto": "D4",
-          "tenor": "B3",
-          "bass": "G2"
-        }
-      },
-      {
-        "id": 5,
-        "title": "Freude schöner Götterfunken",
-        "notes": {
-          "soprano": {"Hoch": "G5", "Tief": "E5"},
-          "alto": {"Hoch": "D5", "Tief": "B4"},
-          "tenor": "G4",
-          "bass": "E3"
-        }
+  "songs": [
+    {
+      "title": "Like A Prayer",
+      "notes": {
+        "soprano": "F",
+        "alto": "D",
+        "tenor": "A",
+        "bass": "D"
       }
-    ]
+    },
+    {
+      "title": "Loch Lomond",
+      "notes": {
+        "soprano": "D",
+        "alto": "D",
+        "tenor": "G",
+        "bass": "C"
+      }
+    }
+  ],
+  "meta": {
+    "count": 2,
+    "generatedAt": "2025-04-06T14:20:54.317Z",
+    "sourceFiles": 2
   }
-  
+}
