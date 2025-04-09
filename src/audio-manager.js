@@ -54,7 +54,6 @@ class AudioManager {
     try {
       // Note in Tone.js-Format umwandeln
       const formattedNote = this.formatNote(noteString);
-
       if (!formattedNote) {
         console.error(`Note ${noteString} konnte nicht formatiert werden`);
         return false;
@@ -73,68 +72,24 @@ class AudioManager {
   formatNote(noteString) {
     // Entferne Leerzeichen und Standardisiere
     const cleanNote = noteString.trim();
-
     // Einfaches Regex-Pattern für gängige Notennamen prüfen: C4, A#3, Bb5 usw.
-    const standardNotePattern = /^[A-Ga-g][#b]?\d$/;
-    if (standardNotePattern.test(cleanNote)) {
-      // Note ist bereits im richtigen Format
-      return cleanNote;
+    const standardNotePattern = /^([A-H])([#b]?)(\d?)$/;
+    const match = cleanNote.match(standardNotePattern);
+    if (!match) {
+      console.error(`Invalid noteString ${noteString}.`);
+      return;
     }
 
-    // Deutsche Notenbezeichnungen umwandeln
-    const germanMappings = {
-      'H': 'B',
-      'h': 'B',
-      'B': 'Bb',
-      'b': 'Bb',
-      'Es': 'Eb',
-      'es': 'Eb',
-      'As': 'Ab',
-      'as': 'Ab'
-    };
+      // Deutsche Notenbezeichnungen umwandeln
+      const germanMappings = {
+        'H': 'B',
+        'B': 'Bb',
+      };
 
-    // Prüfen auf Notennamen ohne Oktave (C, D, E, etc.) - Default-Oktave 4 hinzufügen
-    if (/^[A-Ha-h][#b]?$/.test(cleanNote)) {
-      let noteLetter = cleanNote.charAt(0).toUpperCase();
-      const accidental = cleanNote.length > 1 ? cleanNote.charAt(1) : '';
-
-      // Deutsche Noten umwandeln
-      if (germanMappings[noteLetter]) {
-        noteLetter = germanMappings[noteLetter];
-      }
-
-      // Deutsche Akkord-Symbole umwandeln
-      const noteWithAccidental = noteLetter + accidental;
-      if (germanMappings[noteWithAccidental]) {
-        return germanMappings[noteWithAccidental] + '4';
-      }
-
-      return noteLetter + accidental + '4'; // Oktave 4 hinzufügen
-    }
-
-    // Versuche aus komplexeren Formaten zu extrahieren (z.B. "C-Dur", "a-moll")
-    const complexMatch = cleanNote.match(/^([A-Ha-h][#b]?)[-\s]?(dur|moll|major|minor)?$/i);
-    if (complexMatch) {
-      let noteLetter = complexMatch[1].charAt(0).toUpperCase();
-      const accidental = complexMatch[1].length > 1 ? complexMatch[1].charAt(1) : '';
-
-      // Deutsche Noten umwandeln
-      if (germanMappings[noteLetter]) {
-        noteLetter = germanMappings[noteLetter];
-      }
-
-      // Deutsche Akkord-Symbole umwandeln
-      const noteWithAccidental = noteLetter + accidental;
-      if (germanMappings[noteWithAccidental]) {
-        return germanMappings[noteWithAccidental] + '4';
-      }
-
-      return noteLetter + accidental + '4'; // Oktave 4 hinzufügen
-    }
-
-    // Wenn nichts passt, gib C4 zurück
-    console.warn(`Unbekanntes Notenformat: "${noteString}", verwende C4 als Fallback`);
-    return 'C4';
+    const [_, inputNote, accidental, inputOctave] = match;
+    const octave = inputOctave || '4';
+    const note = germanMappings[inputNote] || inputNote;
+    return note + accidental + octave;
   }
 
   // Wiedergabestatus für einen Button aktualisieren
