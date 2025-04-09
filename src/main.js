@@ -317,6 +317,7 @@ function createPlayButton(note, voice, songId, songTitle, voiceType = null) {
     button.dataset.note = note;
     button.dataset.voice = voice;
     button.dataset.songId = songId;
+    button.disabled = (note === '-');
   
     button.addEventListener('click', async () => {
       // Verhindere mehrfaches Klicken
@@ -341,7 +342,7 @@ function createPlayButton(note, voice, songId, songTitle, voiceType = null) {
       // Fehlerbehandlung
       if (!success) {
         console.error(`Fehler beim Abspielen von ${note}`);
-        alert('Tonwiedergabe nicht möglich. Bitte aktivieren Sie die Audioausgabe in Ihrem Browser und klicken Sie erneut.');
+        alert('Tonwiedergabe nicht möglich.');
       }
     });
   
