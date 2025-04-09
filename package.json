@@ -7,9 +7,11 @@
     "dev": "vite",
     "build-songs": "node build-songs.js",
     "build": "npm run build-songs && vite build",
+    "deploy": "node deploy.js",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "basic-ftp": "^5.0.5",
     "vite": "^6.2.5"
   },
   "dependencies": {
