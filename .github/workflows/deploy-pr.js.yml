@@ -7,6 +7,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# Add this permissions block to grant write access to pull-requests
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -31,3 +36,18 @@ jobs:
         ANSTIMMEN_FTP_VERBOSE: 'false'
         ANSTIMMEN_FTP_TARGET_DIR: 'pr-${{ github.event.pull_request.number }}'
       run: npm run deploy
+
+    - name: Comment on PR
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: preview-deployment
+        message: |
+          ## 🚀 Preview Deployment
+
+          Your PR has been deployed and is available for preview at:
+
+          🔗 [Preview Deployment](https://töne-dev.kneipenchor-dd.org/pr-${{ github.event.pull_request.number }}/)
+
+          **Build Details:**
+          - Commit: ${{ github.sha }}
+          - Workflow Run: [#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})

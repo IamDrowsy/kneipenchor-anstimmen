@@ -1,0 +1,61 @@
+# This workflow deploys to production when changes are merged to main
+
+name: Production Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+
+# Add permissions for creating commit comments
+permissions:
+  contents: write  # Needed for commit comments
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm ci
+    - name: Build
+      run: npm run build
+    - name: Deploy to production
+      env:
+        ANSTIMMEN_FTP_HOST: ${{ secrets.ANSTIMMEN_FTP_HOST }}
+        ANSTIMMEN_FTP_USERNAME: ${{ secrets.ANSTIMMEN_FTP_USERNAME }}
+        ANSTIMMEN_FTP_PASSWORD: ${{ secrets.ANSTIMMEN_FTP_PASSWORD }}
+        ANSTIMMEN_FTP_SECURE: 'false'
+        ANSTIMMEN_FTP_VERBOSE: 'false'
+        ANSTIMMEN_FTP_TARGET_DIR: 'prod'
+      run: npm run deploy
+
+    - name: Get current time
+      id: current-time
+      run: echo "time=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
+    - name: Create deployment status
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const sha = context.sha;
+          const repo = context.repo;
+
+          await github.rest.repos.createCommitComment({
+            owner: repo.owner,
+            repo: repo.repo,
+            commit_sha: sha,
+            body: `## 🚀 Production Deployment
+
+            This commit has been deployed to production at:
+
+            🔗 [Production Site](https://töne.kneipenchor-dd.org/)
+
+            Deployed at: ${{ steps.current-time.outputs.time }}`
+          });
