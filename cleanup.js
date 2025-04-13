@@ -33,7 +33,7 @@ function loadConfig() {
   };
 }
 
-async function deploy() {
+async function cleanup() {
   const ftpConfig = loadConfig();
   const client = new Client();
   client.ftp.verbose = process.env.ANSTIMMEN_FTP_VERBOSE === 'true'; // Enable for debugging via env var
@@ -47,24 +47,16 @@ async function deploy() {
       secure: ftpConfig.secure || false // Set to true for FTPS
     });
 
-    // If a target directory is specified, ensure it exists and navigate to it
-    if (ftpConfig.targetDir) {
-      console.log(`Ensuring target directory exists: ${ftpConfig.targetDir}`);
-      await client.ensureDir(ftpConfig.targetDir);
-    }
-
-    console.log(`Uploading to ${ftpConfig.targetDir}...`);
-    await client.clearWorkingDir(); // Clear the directory
-    await client.uploadFromDir('dist');
-
-    console.log('Deployment completed successfully!');
+    console.log(`Removing directory: ${ftpConfig.targetDir}`);
+    await client.removeDir(ftpConfig.targetDir);
+    console.log('Cleanup completed successfully');
   } catch (err) {
-    console.error('Deployment failed:', err.message);
-    process.exit(1); // Exit with error code
+    console.error('Cleanup failed:', err.message);
+    process.exit(1);
   } finally {
     client.close();
   }
 }
 
 // Execute the deploy function
-deploy();
+cleanup();

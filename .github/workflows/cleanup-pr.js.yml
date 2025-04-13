@@ -1,0 +1,46 @@
+# This workflow cleans up PR deployments when PRs are closed
+
+name: PR Cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+# Add permissions for commenting on PRs
+permissions:
+  pull-requests: write
+
+jobs:
+  cleanup-pr-deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+
+    - name: Install basic-ftp
+      run: npm install basic-ftp
+
+    - name: Run cleanup script
+      env:
+        ANSTIMMEN_FTP_HOST: ${{ secrets.ANSTIMMEN_FTP_HOST }}
+        ANSTIMMEN_FTP_USERNAME: ${{ secrets.ANSTIMMEN_FTP_USERNAME }}
+        ANSTIMMEN_FTP_PASSWORD: ${{ secrets.ANSTIMMEN_FTP_PASSWORD }}
+        ANSTIMMEN_FTP_SECURE: 'false'
+        ANSTIMMEN_FTP_VERBOSE: 'true'
+        ANSTIMMEN_FTP_TARGET_DIR: 'pr-${{ github.event.pull_request.number }}'
+      run: npm run cleanup
+
+    - name: Add cleanup comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: preview-deployment
+        message: |
+          ## 🧹 Preview Deployment Removed
+
+          This PR has been closed, and the preview deployment has been removed.
+
+          The changes from this PR are now available in production if the PR was merged.
