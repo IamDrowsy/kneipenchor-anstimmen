@@ -182,7 +182,7 @@ function loadFilterSettings() {
 }
 async function loadSongs() {
     try {
-      const response = await fetch('/songs.json');
+      const response = await fetch('./songs.json');
       if (!response.ok) {
         throw new Error('Konnte Lieder nicht laden');
       }
