@@ -9,6 +9,7 @@ on:
 # Add permissions for commenting on PRs
 permissions:
   pull-requests: write
+  contents: read
 
 jobs:
   cleanup-pr-deployment:
