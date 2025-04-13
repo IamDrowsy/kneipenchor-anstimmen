@@ -1,0 +1,33 @@
+# This workflow deploys the result of a pull request to the dev location 
+# ! only the latest pr will be present
+
+name: Node.js CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm ci
+    - name: Build
+      run: npm run build
+    - name: Deploy to PR-specific folder
+      env:
+        ANSTIMMEN_FTP_HOST: ${{ secrets.ANSTIMMEN_FTP_HOST }}
+        ANSTIMMEN_FTP_USERNAME: ${{ secrets.ANSTIMMEN_FTP_USERNAME }}
+        ANSTIMMEN_FTP_PASSWORD: ${{ secrets.ANSTIMMEN_FTP_PASSWORD }}
+        ANSTIMMEN_FTP_SECURE: 'false'
+        ANSTIMMEN_FTP_VERBOSE: 'false'
+        ANSTIMMEN_FTP_TARGET_DIR: 'pr-${{ github.event.pull_request.number }}'
+      run: npm run deploy
