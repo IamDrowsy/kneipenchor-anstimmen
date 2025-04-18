@@ -1,4 +1,6 @@
 import * as Tone from 'tone';
+import { Note }  from 'tone/Tone/core/type/NoteUnits'
+import { SongNote } from './types';
 
 class AudioManager {
   initialized: boolean;
@@ -46,7 +48,7 @@ class AudioManager {
   }
 
   // Ton abspielen
-  async playNote(noteString: string, duration: string = "0.8"): Promise<boolean> { // In sekunden
+  async playNote(songNote: SongNote, duration: string = "0.8"): Promise<boolean> { // In sekunden
     // Bei erstem Aufruf initialisieren
     if (!this.initialized) {
       const success = await this.initialize();
@@ -57,9 +59,9 @@ class AudioManager {
 
     try {
       // Note in Tone.js-Format umwandeln
-      const formattedNote = this.formatNote(noteString);
+      const formattedNote = this.formatNote(songNote);
       if (!formattedNote) {
-        console.error(`Note ${noteString} konnte nicht formatiert werden`);
+        console.error(`Note ${songNote} konnte nicht formatiert werden`);
         return false;
       }
 
@@ -76,14 +78,14 @@ class AudioManager {
   }
 
   // Notennamen formatieren
-  formatNote(noteString: string): string | undefined {
+  formatNote(songNote: SongNote): Note | undefined {
     // Entferne Leerzeichen und Standardisiere
-    const cleanNote = noteString.trim();
+    const cleanNote = songNote.trim();
     // Einfaches Regex-Pattern für gängige Notennamen prüfen: C4, A#3, Bb5 usw.
     const standardNotePattern = /^([A-H])([#b]?)(\d?)$/;
     const match = cleanNote.match(standardNotePattern);
     if (!match) {
-      console.error(`Invalid noteString ${noteString}.`);
+      console.error(`Invalid noteString ${songNote}.`);
       return undefined;
     }
 
@@ -96,7 +98,8 @@ class AudioManager {
     const [_, inputNote, accidental, inputOctave] = match;
     const octave = inputOctave || '4';
     const note = germanMappings[inputNote] || inputNote;
-    return note + accidental + octave;
+    // TODO Mehr Type Check wie aus SongNote eine Note wird?
+    return note + accidental + octave as Note ;
   }
 
   // Wiedergabestatus für einen Button aktualisieren

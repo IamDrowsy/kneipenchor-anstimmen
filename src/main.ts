@@ -1,31 +1,7 @@
 // main.ts
 import './style.css'
 import audioManager from './audio-manager';
-
-// Define interfaces for your data structures
-interface VoiceType {
-  key: string;
-  label: string;
-  class: string;
-}
-
-interface Note {
-  [key: string]: string; // For high/low notes
-}
-
-interface SongNotes {
-  soprano: string | Note;
-  alto: string | Note;
-  tenor: string | Note;
-  bass: string | Note;
-  [key: string]: string | Note; // For any additional voice types
-}
-
-interface Song {
-  id: string;
-  title: string;
-  notes: SongNotes;
-}
+import { VoiceType, Song, SongNote, Voice, isSongNote } from './types';
 
 // Zuordnung von Voice-Keys zu Display-Namen
 const voiceTypes: VoiceType[] = [
@@ -272,9 +248,9 @@ function displaySongs(songs: Song[]): void {
       // Prüfen, ob es sich um ein einfaches Note-Format oder Hoch/Tief-Format handelt
       const noteValue = song.notes[voice.key];
 
-      if (typeof noteValue === 'string') {
+      if (isSongNote(noteValue)) {
         // Einfacher Ton
-        const button = createPlayButton(noteValue, voice.key, song.id, song.title);
+        const button = createPlayButton(noteValue, voice.key, song.title);
         cell.appendChild(button);
       } else {
         // Mehrere Töne (Hoch/Tief)
@@ -283,7 +259,7 @@ function displaySongs(songs: Song[]): void {
 
         // Für jeden Untertyp einen Button erstellen
         for (const [type, note] of Object.entries(noteValue)) {
-          const button = createPlayButton(note, voice.key, song.id, song.title, type);
+          const button = createPlayButton(note, voice.key, song.title, type);
           button.dataset.voiceType = type;
           buttonContainer.appendChild(button);
         }
@@ -347,27 +323,26 @@ function toggleSection(section: Element): void {
 }
 
 // Hilfsfunktion zum Erstellen eines Wiedergabe-Buttons
-function createPlayButton(note: string, voice: string, songId: string, songTitle: string, voiceType: string | null = null): HTMLButtonElement {
+function createPlayButton(note: SongNote, voice: Voice, songTitle: string, subVoice: string | null = null): HTMLButtonElement {
   const button = document.createElement('button');
   button.className = 'play-button';
 
   // Button-Text basierend auf Vorhandensein von voiceType anpassen
-  if (voiceType) {
-    button.textContent = `${voiceType}: ${note}`;
+  if (subVoice) {
+    button.textContent = `${subVoice}: ${note}`;
   } else {
     button.textContent = note;
   }
 
   button.dataset.note = note;
   button.dataset.voice = voice;
-  button.dataset.songId = songId;
   button.disabled = (note === '-');
 
   button.addEventListener('click', async () => {
     // Verhindere mehrfaches Klicken
     if (button.disabled) return;
 
-    const voiceInfo = voiceType ? `${voice} (${voiceType})` : voice;
+    const voiceInfo = subVoice ? `${voice} (${subVoice})` : voice;
     console.log(`Spiele Ton ${note} für ${voiceInfo} in Lied "${songTitle}"`);
 
     // Visuelles Feedback
