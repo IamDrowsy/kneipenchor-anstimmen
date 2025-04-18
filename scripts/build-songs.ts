@@ -1,15 +1,32 @@
-// build-songs.js als ES-Modul
+// build-songs.ts
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { projectRoot } from './commons';
 
-// __dirname Äquivalent für ES Module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Define interfaces for your data structures
+interface SongNote {
+  [key: string]: string | Record<string, string>;
+}
+
+interface Song {
+  id?: string;
+  title: string;
+  notes: SongNote;
+  [key: string]: any; // For any additional properties
+}
+
+interface OutputData {
+  songs: Song[];
+  meta: {
+    count: number;
+    generatedAt: string;
+    sourceFiles: number;
+  };
+}
 
 // Konfiguration
-const sourceDir = path.join(__dirname, 'songs');
-const outputFile = path.join(__dirname, 'public', 'songs.json');
+const sourceDir = path.join(projectRoot, 'songs');
+const outputFile = path.join(projectRoot, 'public', 'songs.json');
 
 console.log('Start Build-Prozess für songs.json');
 
@@ -26,14 +43,14 @@ const songFiles = fs.readdirSync(sourceDir)
 console.log(`Gefundene Song-Dateien: ${songFiles.length}`);
 
 // Alle Songs einlesen und zusammenführen
-const songs = [];
+const songs: Song[] = [];
 let errorCount = 0;
 
 songFiles.forEach(file => {
   try {
     const filePath = path.join(sourceDir, file);
     const content = fs.readFileSync(filePath, 'utf8');
-    const song = JSON.parse(content);
+    const song = JSON.parse(content) as Song;
 
     // Einfache Validierung
     if (!song.title || !song.notes) {
@@ -43,7 +60,11 @@ songFiles.forEach(file => {
     songs.push(song);
     console.log(`✓ ${file} (${song.title})`);
   } catch (error) {
-    console.error(`× Fehler bei ${file}: ${error.message}`);
+    if (error instanceof Error) {
+      console.error(`× Fehler bei ${file}: ${error.message}`);
+    } else {
+      console.error(`× Fehler bei ${file}: Unbekannter Fehler`);
+    }
     errorCount++;
   }
 });
@@ -52,7 +73,7 @@ songFiles.forEach(file => {
 songs.sort((a, b) => a.title.localeCompare(b.title, 'de', { sensitivity: 'base' }));
 
 // Ausgabedatei erzeugen
-const output = {
+const output: OutputData = {
   songs: songs,
   meta: {
     count: songs.length,

@@ -5,14 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build-songs": "node build-songs.js",
+    "build-songs": "tsx scripts/build-songs.ts",
     "build": "npm run build-songs && vite build",
-    "cleanup": "node cleanup.js",
-    "deploy": "node deploy.js",
+    "cleanup": "tsx scripts/cleanup.ts",
+    "deploy": "tsx scripts/deploy.ts",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/node": "^22.14.1",
     "basic-ftp": "^5.0.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
     "vite": "^6.2.5"
   },
   "dependencies": {
