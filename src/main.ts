@@ -1,8 +1,10 @@
+// main.ts
 import './style.css'
-import audioManager from './audio-manager.js';
+import audioManager from './audio-manager';
+import { VoiceType, Song, SongNote, Voice, isSongNote } from './types';
 
 // Zuordnung von Voice-Keys zu Display-Namen
-const voiceTypes = [
+const voiceTypes: VoiceType[] = [
   { key: 'soprano', label: 'Sopran', class: 'soprano' },
   { key: 'alto', label: 'Alt', class: 'alto' },
   { key: 'tenor', label: 'Tenor', class: 'tenor' },
@@ -10,15 +12,15 @@ const voiceTypes = [
 ];
 
 // Referenz auf alle geladenen Songs für die Suche
-let allSongs = [];
+let allSongs: Song[] = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
 });
 
 // Suchfunktionalität einrichten
-function setupSearch() {
-  const searchInput = document.getElementById('song-search');
+function setupSearch(): void {
+  const searchInput = document.getElementById('song-search') as HTMLInputElement;
   const clearButton = document.getElementById('clear-search');
   const searchResults = document.getElementById('search-results');
 
@@ -54,7 +56,7 @@ function setupSearch() {
 }
 
 // Durchführung der Suche
-function performSearch(searchTerm) {
+function performSearch(searchTerm: string): void {
   const songRows = document.querySelectorAll('.title-row');
   const resultInfo = document.getElementById('search-results');
 
@@ -63,8 +65,10 @@ function performSearch(searchTerm) {
 
   songRows.forEach(row => {
     const titleCell = row.querySelector('.song-title');
-    const title = titleCell.textContent.toLowerCase();
-    const nextRow = row.nextElementSibling; // Die Zeile mit den Buttons
+    if (!titleCell) return;
+
+    const title = titleCell.textContent?.toLowerCase() || '';
+    const nextRow = row.nextElementSibling as HTMLElement; // Die Zeile mit den Buttons
 
     // Prüfen, ob der Titel den Suchbegriff enthält
     const isMatch = title.includes(searchTerm);
@@ -82,37 +86,39 @@ function performSearch(searchTerm) {
       // Suchbegriff im Titel hervorheben (nur wenn etwas gesucht wird)
       if (searchTerm) {
         const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
-        const highlightedTitle = titleCell.textContent.replace(
+        const highlightedTitle = (titleCell.textContent || '').replace(
           regex, 
           '<span class="highlight-match">$1</span>'
         );
         titleCell.innerHTML = highlightedTitle;
       } else {
-        titleCell.textContent = titleCell.textContent; // Zurücksetzen
+        titleCell.textContent = titleCell.textContent || ''; // Zurücksetzen
       }
     } else if (searchTerm === '') {
       // Hervorhebungen entfernen wenn Suche leer ist
-      titleCell.textContent = titleCell.textContent;
+      titleCell.textContent = titleCell.textContent || '';
     }
   });
 
   // Suchinformationen anzeigen
-  if (searchTerm === '') {
-    resultInfo.textContent = '';
-  } else if (matchCount === 0) {
-    resultInfo.textContent = 'Keine Lieder gefunden.';
-  } else {
-    resultInfo.textContent = `${matchCount} Lied${matchCount !== 1 ? 'er' : ''} gefunden.`;
+  if (resultInfo) {
+    if (searchTerm === '') {
+      resultInfo.textContent = '';
+    } else if (matchCount === 0) {
+      resultInfo.textContent = 'Keine Lieder gefunden.';
+    } else {
+      resultInfo.textContent = `${matchCount} Lied${matchCount !== 1 ? 'er' : ''} gefunden.`;
+    }
   }
 }
 
 // Hilfsfunktion zum Escapen von Sonderzeichen in RegExp
-function escapeRegExp(string) {
+function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // Filter-Funktion einrichten
-function setupVoiceFilter() {
+function setupVoiceFilter(): void {
   // Einklappbare Funktionalität hinzufügen
   setupCollapsibleSections();
 
@@ -122,8 +128,8 @@ function setupVoiceFilter() {
   // Event-Listener für Filtercheckboxen
   const checkboxes = document.querySelectorAll('.filter-option input[type="checkbox"]');
   checkboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-      const voiceKey = this.dataset.voice;
+    checkbox.addEventListener('change', function(this: HTMLInputElement) {
+      const voiceKey = this.dataset.voice || '';
       toggleVoiceVisibility(voiceKey, this.checked);
 
       // Einstellungen im localStorage speichern
@@ -131,13 +137,13 @@ function setupVoiceFilter() {
     });
 
     // Initial die Sichtbarkeit basierend auf Checkbox-Status setzen
-    const voiceKey = checkbox.dataset.voice;
-    toggleVoiceVisibility(voiceKey, checkbox.checked);
+    const voiceKey = (checkbox as HTMLInputElement).dataset.voice || '';
+    toggleVoiceVisibility(voiceKey, (checkbox as HTMLInputElement).checked);
   });
 }
 
 // Sichtbarkeit einer Stimmgruppe umschalten
-function toggleVoiceVisibility(voiceKey, isVisible) {
+function toggleVoiceVisibility(voiceKey: string, isVisible: boolean): void {
   // Spaltenüberschrift umschalten
   console.log(voiceKey, isVisible)
   const headerCell = document.querySelector(`th.voice-column.${voiceKey}`);
@@ -159,51 +165,62 @@ function toggleVoiceVisibility(voiceKey, isVisible) {
 }
 
 // Filter-Einstellungen im localStorage speichern
-function saveFilterSettings() {
-  const settings = {};
+function saveFilterSettings(): void {
+  const settings: Record<string, boolean> = {};
   document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
-    settings[checkbox.dataset.voice] = checkbox.checked;
+    const voice = (checkbox as HTMLInputElement).dataset.voice;
+    if (voice) {
+      settings[voice] = (checkbox as HTMLInputElement).checked;
+    }
   });
   localStorage.setItem('voiceFilterSettings', JSON.stringify(settings));
 }
 
 // Filter-Einstellungen aus localStorage laden
-function loadFilterSettings() {
+function loadFilterSettings(): void {
   const savedSettings = localStorage.getItem('voiceFilterSettings');
   if (savedSettings) {
-    const settings = JSON.parse(savedSettings);
+    const settings = JSON.parse(savedSettings) as Record<string, boolean>;
     document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
-      const voice = checkbox.dataset.voice;
-      if (voice in settings) {
-        checkbox.checked = settings[voice];
+      const voice = (checkbox as HTMLInputElement).dataset.voice;
+      if (voice && voice in settings) {
+        (checkbox as HTMLInputElement).checked = settings[voice];
       }
     });
   }
 }
-async function loadSongs() {
-    try {
-      const response = await fetch('./songs.json');
-      if (!response.ok) {
-        throw new Error('Konnte Lieder nicht laden');
-      }
-  
-      const data = await response.json();
-      allSongs = data.songs; // Alle Songs für die Suche speichern
-      displaySongs(data.songs);
-  
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('song-table').classList.remove('hidden');
-      setupSearch();
-      setupVoiceFilter();
-    } catch (error) {
-      console.error('Fehler beim Laden der Lieder:', error);
-      document.getElementById('loading').textContent = 'Fehler beim Laden der Lieder. Bitte Seite neu laden.';
+
+async function loadSongs(): Promise<void> {
+  try {
+    const response = await fetch('./songs.json');
+    if (!response.ok) {
+      throw new Error('Konnte Lieder nicht laden');
+    }
+
+    const data = await response.json();
+    allSongs = data.songs; // Alle Songs für die Suche speichern
+    displaySongs(data.songs);
+
+    const loadingElement = document.getElementById('loading');
+    const songTableElement = document.getElementById('song-table');
+
+    if (loadingElement) loadingElement.classList.add('hidden');
+    if (songTableElement) songTableElement.classList.remove('hidden');
+
+    setupSearch();
+    setupVoiceFilter();
+  } catch (error) {
+    console.error('Fehler beim Laden der Lieder:', error);
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement) {
+      loadingElement.textContent = 'Fehler beim Laden der Lieder. Bitte Seite neu laden.';
     }
   }
-  
+}
 
-function displaySongs(songs) {
+function displaySongs(songs: Song[]): void {
   const songList = document.getElementById('song-list');
+  if (!songList) return;
 
   songs.forEach(song => {
     // Erste Zeile mit Liedtitel (überspannt alle 4 Spalten)
@@ -231,9 +248,9 @@ function displaySongs(songs) {
       // Prüfen, ob es sich um ein einfaches Note-Format oder Hoch/Tief-Format handelt
       const noteValue = song.notes[voice.key];
 
-      if (typeof noteValue === 'string') {
+      if (isSongNote(noteValue)) {
         // Einfacher Ton
-        const button = createPlayButton(noteValue, voice.key, song.id, song.title);
+        const button = createPlayButton(noteValue, voice.key, song.title);
         cell.appendChild(button);
       } else {
         // Mehrere Töne (Hoch/Tief)
@@ -242,7 +259,7 @@ function displaySongs(songs) {
 
         // Für jeden Untertyp einen Button erstellen
         for (const [type, note] of Object.entries(noteValue)) {
-          const button = createPlayButton(note, voice.key, song.id, song.title, type);
+          const button = createPlayButton(note, voice.key, song.title, type);
           button.dataset.voiceType = type;
           buttonContainer.appendChild(button);
         }
@@ -258,102 +275,103 @@ function displaySongs(songs) {
 }
 
 // Funktionalität für einklappbare Bereiche
-function setupCollapsibleSections() {
-    const collapsibleSections = document.querySelectorAll('.collapsible-section');
-  
-    collapsibleSections.forEach(section => {
-      const header = section.querySelector('.section-header');
-      const toggleButton = section.querySelector('.toggle-button');
-      const content = section.querySelector('.section-content');
-  
-      // Lädt gespeicherten Zustand (optional)
-      const sectionId = section.id || 'filter-section';
-      const isCollapsed = localStorage.getItem(`${sectionId}-collapsed`) === 'true';
-  
-      // Initialen Zustand setzen
-      if (isCollapsed) {
-        section.classList.add('collapsed');
+function setupCollapsibleSections(): void {
+  const collapsibleSections = document.querySelectorAll('.collapsible-section');
+
+  collapsibleSections.forEach(section => {
+    const header = section.querySelector('.section-header');
+    const toggleButton = section.querySelector('.toggle-button');
+    const content = section.querySelector('.section-content');
+
+    if (!header) return;
+
+    // Lädt gespeicherten Zustand (optional)
+    const sectionId = section.id || 'filter-section';
+    const isCollapsed = localStorage.getItem(`${sectionId}-collapsed`) === 'true';
+
+    // Initialen Zustand setzen
+    if (isCollapsed) {
+      section.classList.add('collapsed');
+      if (toggleButton instanceof HTMLElement) {
         toggleButton.setAttribute('aria-expanded', 'false');
       }
-  
-      // Event-Listener für Klick auf Header oder Button
-      header.addEventListener('click', () => toggleSection(section));
-      if (toggleButton) {
-        toggleButton.addEventListener('click', (e) => {
-          e.stopPropagation(); // Verhindert doppeltes Auslösen
-          toggleSection(section);
-        });
-      }
-    });
-  }
-  
-  // Funktion zum Umschalten des Bereichs
-  function toggleSection(section) {
-    const isCollapsed = section.classList.toggle('collapsed');
-    const toggleButton = section.querySelector('.toggle-button');
-    const sectionId = section.id || 'filter-section';
-  
-    if (toggleButton) {
-      toggleButton.setAttribute('aria-expanded', !isCollapsed);
     }
-  
-    // Zustand speichern (optional)
-    localStorage.setItem(`${sectionId}-collapsed`, isCollapsed);
+
+    // Event-Listener für Klick auf Header oder Button
+    header.addEventListener('click', () => toggleSection(section));
+    if (toggleButton) {
+      toggleButton.addEventListener('click', (e) => {
+        e.stopPropagation(); // Verhindert doppeltes Auslösen
+        toggleSection(section);
+      });
+    }
+  });
+}
+
+// Funktion zum Umschalten des Bereichs
+function toggleSection(section: Element): void {
+  const isCollapsed = section.classList.toggle('collapsed');
+  const toggleButton = section.querySelector('.toggle-button');
+  const sectionId = section.id || 'filter-section';
+
+  if (toggleButton) {
+    toggleButton.setAttribute('aria-expanded', (!isCollapsed).toString());
   }
 
+  // Zustand speichern (optional)
+  localStorage.setItem(`${sectionId}-collapsed`, isCollapsed.toString());
+}
 
 // Hilfsfunktion zum Erstellen eines Wiedergabe-Buttons
-function createPlayButton(note, voice, songId, songTitle, voiceType = null) {
-    const button = document.createElement('button');
-    button.className = 'play-button';
-  
-    // Button-Text basierend auf Vorhandensein von voiceType anpassen
-    if (voiceType) {
-      button.textContent = `${voiceType}: ${note}`;
-    } else {
-      button.textContent = note;
-    }
-  
-    button.dataset.note = note;
-    button.dataset.voice = voice;
-    button.dataset.songId = songId;
-    button.disabled = (note === '-');
-  
-    button.addEventListener('click', async () => {
-      // Verhindere mehrfaches Klicken
-      if (button.disabled) return;
-  
-      const voiceInfo = voiceType ? `${voice} (${voiceType})` : voice;
-      console.log(`Spiele Ton ${note} für ${voiceInfo} in Lied "${songTitle}"`);
-  
-      // Visuelles Feedback
-      button.disabled = true;
-      audioManager.updatePlayingStatus(button, true);
-  
-      // Ton abspielen
-      const success = await audioManager.playNote(note);
-  
-      // Nach 800ms zurücksetzen (passend zur Animation)
-      setTimeout(() => {
-        button.disabled = false;
-        audioManager.updatePlayingStatus(button, false);
-      }, 800);
-  
-      // Fehlerbehandlung
-      if (!success) {
-        console.error(`Fehler beim Abspielen von ${note}`);
-        alert('Tonwiedergabe nicht möglich.');
-      }
-    });
-  
-    return button;
+function createPlayButton(note: SongNote, voice: Voice, songTitle: string, subVoice: string | null = null): HTMLButtonElement {
+  const button = document.createElement('button');
+  button.className = 'play-button';
+
+  // Button-Text basierend auf Vorhandensein von voiceType anpassen
+  if (subVoice) {
+    button.textContent = `${subVoice}: ${note}`;
+  } else {
+    button.textContent = note;
   }
-  
-  // Audio-Initialisierung bei erster Benutzerinteraktion
-  document.addEventListener('click', async () => {
-    if (!audioManager.initialized) {
-      console.log('Initialisiere Audio nach Benutzerinteraktion');
-      await audioManager.initialize();
+
+  button.dataset.note = note;
+  button.dataset.voice = voice;
+  button.disabled = (note === '-');
+
+  button.addEventListener('click', async () => {
+    // Verhindere mehrfaches Klicken
+    if (button.disabled) return;
+
+    const voiceInfo = subVoice ? `${voice} (${subVoice})` : voice;
+    console.log(`Spiele Ton ${note} für ${voiceInfo} in Lied "${songTitle}"`);
+
+    // Visuelles Feedback
+    button.disabled = true;
+    audioManager.updatePlayingStatus(button, true);
+
+    // Ton abspielen
+    const success = await audioManager.playNote(note);
+
+    // Nach 800ms zurücksetzen (passend zur Animation)
+    setTimeout(() => {
+      button.disabled = false;
+      audioManager.updatePlayingStatus(button, false);
+    }, 800);
+
+    // Fehlerbehandlung
+    if (!success) {
+      console.error(`Fehler beim Abspielen von ${note}`);
+      alert('Tonwiedergabe nicht möglich.');
     }
-  }, { once: true }); // once: true sorgt dafür, dass der Listener nur einmal ausgeführt wird
-  
+  });
+
+  return button;
+}
+
+// Audio-Initialisierung bei erster Benutzerinteraktion
+document.addEventListener('click', async () => {
+  if (!audioManager.initialized) {
+    console.log('Initialisiere Audio nach Benutzerinteraktion');
+    await audioManager.initialize();
+  }
+}, { once: true }); // once: true sorgt dafür, dass der Listener nur einmal ausgeführt wird
