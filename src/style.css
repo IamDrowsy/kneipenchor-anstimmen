@@ -82,19 +82,20 @@ tr:nth-child(even) {
 }
 
 /* Farben für verschiedene Stimmgruppen */
-td:nth-child(1) .play-button {
+/* td:nth-child(1) is now .alle-column, styled separately */
+td:nth-child(2) .play-button { /* Sopran was 1st, now 2nd */
   background-color: #e74c3c; /* Sopran */
 }
 
-td:nth-child(2) .play-button {
+td:nth-child(3) .play-button { /* Alt was 2nd, now 3rd */
   background-color: #f39c12; /* Alt */
 }
 
-td:nth-child(3) .play-button {
+td:nth-child(4) .play-button { /* Tenor was 3rd, now 4th */
   background-color: #2ecc71; /* Tenor */
 }
 
-td:nth-child(4) .play-button {
+td:nth-child(5) .play-button { /* Bass was 4th, now 5th */
   background-color: #3498db; /* Bass */
 }
 
@@ -207,20 +208,26 @@ td:nth-child(4) .play-button {
   }
 
   /* Farben der Labels statt Buttons für Stimmgruppen */
-  .notes-row td:nth-child(1)::before {
+  /* .notes-row td:nth-child(1) is now .alle-column, styled separately */
+  .notes-row td:nth-child(2)::before { /* Sopran was 1st, now 2nd */
     color: #e74c3c; /* Sopran */
   }
 
-  .notes-row td:nth-child(2)::before {
+  .notes-row td:nth-child(3)::before { /* Alt was 2nd, now 3rd */
     color: #f39c12; /* Alt */
   }
 
-  .notes-row td:nth-child(3)::before {
+  .notes-row td:nth-child(4)::before { /* Tenor was 3rd, now 4th */
     color: #2ecc71; /* Tenor */
   }
 
-  .notes-row td:nth-child(4)::before {
+  .notes-row td:nth-child(5)::before { /* Bass was 4th, now 5th */
     color: #3498db; /* Bass */
+  }
+
+  /* Label for "Alle" column in mobile view */
+  .notes-row td.alle-column::before {
+    color: #555; /* Neutral color for "Alle" label */
   }
 }
 
@@ -279,6 +286,45 @@ td:nth-child(4) .play-button {
 
 .filter-label.bass {
   color: #3498db;
+}
+
+/* Farbe für "Alle" Filter-Label */
+.filter-label.alle-filter {
+  color: #6c757d; /* Neutral color, matches Alle buttons */
+}
+
+/* Styles for additional settings in the modal */
+.settings-divider {
+  border: 0;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 20px 0;
+}
+
+.setting-option {
+  margin-bottom: 15px;
+}
+
+.setting-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.setting-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 120px; /* Adjust as needed */
+  font-size: 0.9rem;
+}
+
+.input-description {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 3px;
 }
 
 /* Versteckte Spalten */
@@ -410,20 +456,36 @@ td.voice-column.hidden {
 }
 
 /* Spezifische Glühen-Effekte für verschiedene Stimmgruppen */
-td:nth-child(1) .play-button.playing {
+/* td:nth-child(1) is now .alle-column, styled separately */
+td:nth-child(2) .play-button.playing { /* Sopran was 1st, now 2nd */
   box-shadow: 0 0 8px 2px rgba(231, 76, 60, 0.5); /* Sopran */
 }
 
-td:nth-child(2) .play-button.playing {
+td:nth-child(3) .play-button.playing { /* Alt was 2nd, now 3rd */
   box-shadow: 0 0 8px 2px rgba(243, 156, 18, 0.5); /* Alt */
 }
 
-td:nth-child(3) .play-button.playing {
+td:nth-child(4) .play-button.playing { /* Tenor was 3rd, now 4th */
   box-shadow: 0 0 8px 2px rgba(46, 204, 113, 0.5); /* Tenor */
 }
 
-td:nth-child(4) .play-button.playing {
+td:nth-child(5) .play-button.playing { /* Bass was 4th, now 5th */
   box-shadow: 0 0 8px 2px rgba(52, 152, 219, 0.5); /* Bass */
+}
+
+/* Styles for the "Alle" column and its buttons */
+.voice-column.alle-column {
+  /* Optional: specific styling for the Alle column header/cell if needed */
+  /* e.g., background-color: #e9e9e9; */
+}
+
+.alle-column .play-button {
+  background-color: #6c757d; /* A neutral color (e.g., grey) */
+}
+
+.alle-column .play-button.playing {
+  box-shadow: 0 0 8px 2px rgba(108, 117, 125, 0.5); /* Neutral glow */
+  /* filter: brightness(110%); is already part of .play-button.playing */
 }
 
 /* Deaktivierte Schaltflächen während der Wiedergabe */

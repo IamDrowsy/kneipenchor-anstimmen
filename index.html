@@ -76,6 +76,10 @@
           <div class="section-content" id="filter-content">
             <div class="filter-options">
               <label class="filter-option">
+                <input type="checkbox" data-voice="alle">
+                <span class="filter-label alle-filter">Alle</span>
+              </label>
+              <label class="filter-option">
                 <input type="checkbox" data-voice="soprano" checked>
                 <span class="filter-label soprano">Sopran</span>
               </label>
@@ -92,6 +96,12 @@
                 <span class="filter-label bass">Bass</span>
               </label>
             </div>
+            <hr class="settings-divider">
+            <div class="setting-option">
+              <label for="play-duration-input" class="setting-label">Abspieldauer pro Ton [ms]:</label>
+              <input type="number" id="play-duration-input" min="100" max="5000" step="50" class="setting-input">
+              <span class="input-description">Dauer für einzelne Töne & Akkord-Töne (visuell & Freigabe).</span>
+            </div>
           </div>
         </div>
       </div>
@@ -101,6 +111,7 @@
     <table id="song-table" class="hidden">
       <thead>
         <tr>
+          <th class="voice-column alle-column">Alle</th>
           <th class="voice-column soprano">Sopran</th>
           <th class="voice-column alto">Alt</th>
           <th class="voice-column tenor">Tenor</th>

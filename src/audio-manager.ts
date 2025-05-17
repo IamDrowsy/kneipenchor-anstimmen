@@ -48,7 +48,7 @@ class AudioManager {
   }
 
   // Ton abspielen
-  async playNote(songNote: SongNote, duration: string = "0.8"): Promise<boolean> { // In sekunden
+  async playNote(songNote: SongNote, durationMs: number): Promise<boolean> {
     // Bei erstem Aufruf initialisieren
     if (!this.initialized) {
       const success = await this.initialize();
@@ -67,7 +67,8 @@ class AudioManager {
 
       // Ton abspielen
       if (this.synth) {
-        this.synth.triggerAttackRelease(formattedNote, duration);
+        const durationSeconds = durationMs / 1000; // Convert ms to seconds
+        this.synth.triggerAttackRelease(formattedNote, durationSeconds);
         return true;
       }
       return false;
