@@ -18,6 +18,7 @@ export  type SongNotes = {
  export interface Song {
     title: string;
     notes: SongNotes;
+    customChord?: SongNote[]; // Optional: An array of notes for a specific chord override
   }
 
 export type Voice = 'soprano' | 'alto' | 'tenor' | 'bass';
@@ -38,4 +39,3 @@ export function isSongNote(value: SongNote | SongNoteMap): value is SongNote {
 }
 
 export type SongNote = `${SongNoteLetter}${SongNoteOctave}`;
-

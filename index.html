@@ -76,6 +76,10 @@
           <div class="section-content" id="filter-content">
             <div class="filter-options">
               <label class="filter-option">
+                <input type="checkbox" data-voice="alle">
+                <span class="filter-label alle-filter">Alle</span>
+              </label>
+              <label class="filter-option">
                 <input type="checkbox" data-voice="soprano" checked>
                 <span class="filter-label soprano">Sopran</span>
               </label>
@@ -92,6 +96,22 @@
                 <span class="filter-label bass">Bass</span>
               </label>
             </div>
+            <hr class="settings-divider">
+            <div class="setting-option">
+              <label for="play-duration-input" class="setting-label">Abspieldauer pro Ton [ms]:</label>
+              <div class="range-slider-container">
+                <input type="range" id="play-duration-input" min="100" max="2000" step="50" class="setting-input setting-range-slider">
+                <span id="play-duration-value" class="range-slider-value">800</span> <!-- Default value -->
+              </div>
+            </div>
+            <!-- Volume Slider -->
+            <div class="setting-option">
+              <label for="volume-control-input" class="setting-label">Lautstärke [%]:</label>
+              <div class="range-slider-container">
+                <input type="range" id="volume-control-input" min="0" max="100" step="1" value="90" class="setting-input setting-range-slider">
+                <span id="volume-control-value" class="range-slider-value">90</span> <!-- Default value (90% maps to approx -6dB) -->
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -101,6 +121,7 @@
     <table id="song-table" class="hidden">
       <thead>
         <tr>
+          <th class="voice-column alle-column">Alle</th>
           <th class="voice-column soprano">Sopran</th>
           <th class="voice-column alto">Alt</th>
           <th class="voice-column tenor">Tenor</th>

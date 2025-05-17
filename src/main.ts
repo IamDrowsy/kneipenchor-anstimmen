@@ -14,6 +14,22 @@ const voiceTypes: VoiceType[] = [
 // Referenz auf alle geladenen Songs für die Suche
 let allSongs: Song[] = [];
 
+// Globale Variable für konfigurierbare Dauer
+let individualNotePlayDuration = 800; // Default value in ms for individual note playback
+const INDIVIDUAL_NOTE_PLAY_DURATION_STORAGE_KEY = 'individualNotePlayDurationSetting';
+
+// Globale Variable für Lautstärke
+let currentVolumePercent = 90; // Default volume 0-100 (90 corresponds to approx -6dB)
+const VOLUME_SETTING_STORAGE_KEY = 'volumeSetting';
+
+// Short forms for voice types for button display
+const voiceShortForms: Record<Voice, string> = {
+  soprano: 'S',
+  alto: 'A',
+  tenor: 'T',
+  bass: 'B',
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
   setupFilterModal();
@@ -120,10 +136,10 @@ function escapeRegExp(string: string): string {
 
 // Filter-Funktion einrichten
 function setupVoiceFilter(): void {
-  // Filter-Einstellungen aus localStorage laden (falls vorhanden)
-  loadFilterSettings();
+  // Alle Einstellungen laden (Filter, Notendauer, Lautstärke)
+  loadAllSettings();
 
-  // Event-Listener für Filtercheckboxen
+  // --- Event-Listener für Filtercheckboxen ---
   const checkboxes = document.querySelectorAll('.filter-option input[type="checkbox"]');
   checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', function(this: HTMLInputElement) {
@@ -131,54 +147,99 @@ function setupVoiceFilter(): void {
       toggleVoiceVisibility(voiceKey, this.checked);
 
       // Einstellungen im localStorage speichern
-      saveFilterSettings();
+      saveAllSettings();
     });
 
     // Initial die Sichtbarkeit basierend auf Checkbox-Status setzen
     const voiceKey = (checkbox as HTMLInputElement).dataset.voice || '';
     toggleVoiceVisibility(voiceKey, (checkbox as HTMLInputElement).checked);
   });
+
+  // --- Event-Listener für Abspieldauer-Eingabefeld (einzelne Töne) ---
+  const playDurationInput = document.getElementById('play-duration-input') as HTMLInputElement;
+  const playDurationValueDisplay = document.getElementById('play-duration-value') as HTMLSpanElement;
+
+  if (playDurationInput && playDurationValueDisplay) {
+    // Event listener for the range slider
+    playDurationInput.addEventListener('input', function(this: HTMLInputElement) {
+      const newDuration = parseInt(this.value, 10);
+      if (!isNaN(newDuration) && newDuration >= parseInt(this.min) && newDuration <= parseInt(this.max)) {
+        individualNotePlayDuration = newDuration;
+        playDurationValueDisplay.textContent = newDuration.toString();
+        saveAllSettings();
+      } else {
+        // Reset to current valid value if input is invalid
+        this.value = individualNotePlayDuration.toString();
+        playDurationValueDisplay.textContent = individualNotePlayDuration.toString();
+      }
+    });
+  }
+
+  // --- Event-Listener für Lautstärke-Regler ---
+  const volumeInput = document.getElementById('volume-control-input') as HTMLInputElement;
+  const volumeValueDisplay = document.getElementById('volume-control-value') as HTMLSpanElement;
+
+  if (volumeInput && volumeValueDisplay) {
+    volumeInput.addEventListener('input', function(this: HTMLInputElement) {
+      const newVolume = parseInt(this.value, 10);
+      // Range input inherently constrains values between min and max
+      currentVolumePercent = newVolume;
+      volumeValueDisplay.textContent = newVolume.toString();
+      audioManager.setVolume(currentVolumePercent); // Update AudioManager
+      saveAllSettings(); // Save the new volume setting
+    });
+  }
 }
 
-// Sichtbarkeit einer Stimmgruppe umschalten
+
+
+// Sichtbarkeit einer Stimmgruppe umschalten (no changes to this function)
 function toggleVoiceVisibility(voiceKey: string, isVisible: boolean): void {
-  // Spaltenüberschrift umschalten
-  console.log(voiceKey, isVisible)
-  const headerCell = document.querySelector(`th.voice-column.${voiceKey}`);
+  console.log(`Toggling visibility for ${voiceKey}: ${isVisible}`);
+
+  // Determine the correct selectors for header and cells
+  const headerSelector = voiceKey === 'alle' ? `th.alle-column` : `th.voice-column.${voiceKey}`;
+  const cellSelector = voiceKey === 'alle' ? `td.alle-column` : `td.voice-column.${voiceKey}`;
+
+  // Toggle header visibility
+  const headerCell = document.querySelector(headerSelector);
   if (headerCell) {
     headerCell.classList.toggle('hidden', !isVisible);
   }
 
-  // Alle Zellen dieser Stimmgruppe umschalten (Desktop)
-  const cells = document.querySelectorAll(`td.voice-column.${voiceKey}`);
+  // Toggle cell visibility (this covers both desktop and mobile views)
+  const cells = document.querySelectorAll(cellSelector);
   cells.forEach(cell => {
     cell.classList.toggle('hidden', !isVisible);
   });
-
-  // Mobile Layout: Einzelne Karten umschalten
-  const mobileCards = document.querySelectorAll(`.notes-row td.${voiceKey}`);
-  mobileCards.forEach(card => {
-    card.classList.toggle('hidden', !isVisible);
-  });
 }
 
-// Filter-Einstellungen im localStorage speichern
-function saveFilterSettings(): void {
-  const settings: Record<string, boolean> = {};
+// Alle Einstellungen (Filter, Notendauer, Lautstärke) im localStorage speichern
+function saveAllSettings(): void {
+  // Filter-Einstellungen speichern
+  const filterSettings: Record<string, boolean> = {};
   document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
     const voice = (checkbox as HTMLInputElement).dataset.voice;
     if (voice) {
-      settings[voice] = (checkbox as HTMLInputElement).checked;
+      filterSettings[voice] = (checkbox as HTMLInputElement).checked;
     }
   });
-  localStorage.setItem('voiceFilterSettings', JSON.stringify(settings));
+  localStorage.setItem('voiceFilterSettings', JSON.stringify(filterSettings));
+
+  // Abspieldauer für einzelne Töne speichern
+  localStorage.setItem(INDIVIDUAL_NOTE_PLAY_DURATION_STORAGE_KEY, individualNotePlayDuration.toString());
+
+  // Lautstärke speichern
+  localStorage.setItem(VOLUME_SETTING_STORAGE_KEY, currentVolumePercent.toString());
 }
 
-// Filter-Einstellungen aus localStorage laden
-function loadFilterSettings(): void {
-  const savedSettings = localStorage.getItem('voiceFilterSettings');
-  if (savedSettings) {
-    const settings = JSON.parse(savedSettings) as Record<string, boolean>;
+// Alle Einstellungen (Filter, Notendauer, Lautstärke) aus localStorage laden
+function loadAllSettings(): void {
+  // --- Filter-Einstellungen laden ---
+  // Filter-Einstellungen laden
+  const savedFilterSettings = localStorage.getItem('voiceFilterSettings');
+  if (savedFilterSettings) {
+    const settings = JSON.parse(savedFilterSettings) as Record<string, boolean>;
     document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
       const voice = (checkbox as HTMLInputElement).dataset.voice;
       if (voice && voice in settings) {
@@ -186,7 +247,40 @@ function loadFilterSettings(): void {
       }
     });
   }
+
+  // --- Abspieldauer für Töne laden ---
+  const savedPlayDuration = localStorage.getItem(INDIVIDUAL_NOTE_PLAY_DURATION_STORAGE_KEY);
+  if (savedPlayDuration) {
+    const parsedPlayDuration = parseInt(savedPlayDuration, 10);
+    if (!isNaN(parsedPlayDuration)) {
+      individualNotePlayDuration = parsedPlayDuration;
+    }
+  }
+  // Update both the slider and its value display
+  const playDurationInput = document.getElementById('play-duration-input') as HTMLInputElement;
+  const playDurationValueDisplay = document.getElementById('play-duration-value') as HTMLSpanElement;
+  if (playDurationInput && playDurationValueDisplay) {
+    playDurationInput.value = individualNotePlayDuration.toString();
+    playDurationValueDisplay.textContent = individualNotePlayDuration.toString();
+  }
+
+  // --- Lautstärke laden ---
+  const savedVolume = localStorage.getItem(VOLUME_SETTING_STORAGE_KEY);
+  if (savedVolume) {
+    const parsedVolume = parseInt(savedVolume, 10);
+    if (!isNaN(parsedVolume) && parsedVolume >= 0 && parsedVolume <= 100) {
+      currentVolumePercent = parsedVolume;
+    }
+  }
+  const volumeInput = document.getElementById('volume-control-input') as HTMLInputElement;
+  const volumeValueDisplay = document.getElementById('volume-control-value') as HTMLSpanElement;
+  if (volumeInput && volumeValueDisplay) {
+    volumeInput.value = currentVolumePercent.toString();
+    volumeValueDisplay.textContent = currentVolumePercent.toString();
+  }
+  audioManager.setVolume(currentVolumePercent); // Apply loaded/default volume to AudioManager
 }
+
 
 async function loadSongs(): Promise<void> {
   try {
@@ -227,13 +321,139 @@ function displaySongs(songs: Song[]): void {
     const titleCell = document.createElement('td');
     titleCell.textContent = song.title;
     titleCell.className = 'song-title';
-    titleCell.colSpan = 4; // Überspannt alle 4 Spalten für Stimmgruppen
+    titleCell.colSpan = 5; // Überspannt alle 5 Spalten (4 Stimmen + Alle)
     titleRow.appendChild(titleCell);
     songList.appendChild(titleRow);
 
     // Zweite Zeile mit Buttons für die Stimmlagen
     const notesRow = document.createElement('tr');
     notesRow.className = 'notes-row';
+
+    // --- Create the "Alle" cell (now first) ---
+    const alleCell = document.createElement('td');
+    alleCell.className = 'voice-column alle-column'; // Class for styling
+    alleCell.dataset.label = 'Alle'; // For mobile view label
+
+    const alleButtonContainer = document.createElement('div');
+    alleButtonContainer.className = 'button-group';
+
+    // Collect notes for sequential playback and their corresponding display labels for the button's static text
+    const notesForSequencePlayback: SongNote[] = [];
+    const sequenceDisplayLabels: string[] = [];
+
+    voiceTypes.forEach(vt => {
+      const noteValue = song.notes[vt.key];
+      const voiceShort = voiceShortForms[vt.key];
+
+      if (isSongNote(noteValue)) { // Single note string
+        if (noteValue !== '-') {
+          notesForSequencePlayback.push(noteValue);
+          sequenceDisplayLabels.push(voiceShort);
+        }
+      } else if (noteValue && typeof noteValue === 'object') { // Object with sub-notes
+        // Iterate entries to maintain a somewhat predictable order (e.g., 'hoch' then 'tief' if defined that way)
+        Object.entries(noteValue).forEach(([subKey, subNote]) => {
+          if (typeof subNote === 'string' && subNote !== '-') {
+            notesForSequencePlayback.push(subNote);
+            const subKeyShort = subKey.length > 0 ? subKey.substring(0, 1).toUpperCase() : ''; // e.g., H for hoch, T for tief
+            sequenceDisplayLabels.push(`${voiceShort}${subKeyShort}`);
+          }
+        });
+      }
+    });
+    // --- "Akkord" Button ---
+    let allNotesForSong: SongNote[];
+
+    // Check for customChord first
+    if (song.customChord && song.customChord.length > 0) {
+      allNotesForSong = song.customChord.filter(note => note !== '-'); // Use custom chord if provided and not empty
+      console.log(`Using custom chord for "${song.title}":`, allNotesForSong);
+    } else {
+      // Fallback to collecting notes from voices
+      allNotesForSong = [];
+      voiceTypes.forEach(vt => {
+        const noteValue = song.notes[vt.key];
+        if (isSongNote(noteValue)) { // Single note string
+          if (noteValue !== '-') allNotesForSong.push(noteValue);
+        } else if (noteValue && typeof noteValue === 'object') { // Object with sub-notes like { hoch: 'C4', tief: 'G3' }
+          Object.values(noteValue).forEach(subNote => {
+            if (typeof subNote === 'string' && subNote !== '-') {
+              allNotesForSong.push(subNote);
+            }
+          });
+        }
+      });
+    }
+
+    const akkordButton = document.createElement('button');
+    akkordButton.textContent = 'Akkord';
+    akkordButton.className = 'play-button alle-button akkord-button';
+    // Disable if no notes are available (allNotesForSong will be empty if all notes are '-')
+    akkordButton.disabled = allNotesForSong.length === 0;
+
+    akkordButton.addEventListener('click', async () => {
+      if (akkordButton.disabled) return;
+      akkordButton.disabled = true;
+      audioManager.updatePlayingStatus(akkordButton, true);
+      const playPromises = allNotesForSong.map(note =>
+        audioManager.playNote(note, individualNotePlayDuration).catch(e => {
+          console.error(`Fehler beim Abspielen von ${note} im Akkord-Versuch für "${song.title}".`, e);
+          return false;
+        })
+      );
+      await Promise.all(playPromises);
+      setTimeout(() => {
+        akkordButton.disabled = allNotesForSong.length === 0;
+        audioManager.updatePlayingStatus(akkordButton, false);
+      }, individualNotePlayDuration); // Use configurable duration
+    });
+    alleButtonContainer.appendChild(akkordButton);
+
+    // --- "Nacheinander" Button ---
+    const nacheinanderButton = document.createElement('button');
+    const nacheinanderButtonInitialText = sequenceDisplayLabels.length > 0 ? sequenceDisplayLabels.join(', ') : 'Nacheinander';
+    nacheinanderButton.textContent = nacheinanderButtonInitialText;
+    nacheinanderButton.className = 'play-button alle-button nacheinander-button';
+    nacheinanderButton.disabled = notesForSequencePlayback.length === 0;
+
+    // Event listener for "Nacheinander" (Sequential) button
+    nacheinanderButton.addEventListener('click', async () => {
+      if (nacheinanderButton.disabled) return;
+      nacheinanderButton.disabled = true; // Disable the button for the duration of the sequence
+      // The button text (e.g., "S, AH, T") remains static during playback.
+
+      const DURATION_PER_NOTE = individualNotePlayDuration; // Use the single configurable duration
+
+      for (let i = 0; i < notesForSequencePlayback.length; i++) {
+        const noteToPlay = notesForSequencePlayback[i];
+
+        // Visual pulse remains, text does not change
+        audioManager.updatePlayingStatus(nacheinanderButton, true); // Start visual pulse for this note
+
+        try {
+          await audioManager.playNote(noteToPlay, DURATION_PER_NOTE);
+        } catch (e) {
+          console.error(`Fehler beim Abspielen von ${noteToPlay} in Sequenz für Lied "${song.title}".`, e);
+          // Continue to the delay even if this note fails, to maintain timing for visuals
+        }
+
+        // Wait for DURATION_PER_NOTE. This allows the note to be heard
+        await new Promise(resolve => setTimeout(resolve, DURATION_PER_NOTE));
+
+        audioManager.updatePlayingStatus(nacheinanderButton, false); // Stop visual pulse for this note
+
+        // If not the last note, add a tiny delay for separation / animation restart.
+        if (i < notesForSequencePlayback.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 50)); // 50ms brief pause
+        }
+      }
+      // Re-enable the button after the entire sequence is complete
+      nacheinanderButton.disabled = notesForSequencePlayback.length === 0;
+    });
+    alleButtonContainer.appendChild(nacheinanderButton);
+
+    alleCell.appendChild(alleButtonContainer);
+    notesRow.appendChild(alleCell); // Append "Alle" cell first
 
     // Zellen für die Stimmgruppen
     voiceTypes.forEach(voice => {
@@ -345,13 +565,13 @@ function createPlayButton(note: SongNote, voice: Voice, songTitle: string, subVo
     audioManager.updatePlayingStatus(button, true);
 
     // Ton abspielen
-    const success = await audioManager.playNote(note);
+    const success = await audioManager.playNote(note, individualNotePlayDuration);
 
-    // Nach 800ms zurücksetzen (passend zur Animation)
+    // Nach konfigurierbarer Dauer zurücksetzen
     setTimeout(() => {
       button.disabled = false;
       audioManager.updatePlayingStatus(button, false);
-    }, 800);
+    }, individualNotePlayDuration); // Use configurable duration
 
     // Fehlerbehandlung
     if (!success) {
@@ -367,6 +587,7 @@ function createPlayButton(note: SongNote, voice: Voice, songTitle: string, subVo
 document.addEventListener('click', async () => {
   if (!audioManager.initialized) {
     console.log('Initialisiere Audio nach Benutzerinteraktion');
-    await audioManager.initialize();
+    // AudioManager will use its currentVolumePercent, which was set by loadAllSettings()
+    await audioManager.initialize(); 
   }
 }, { once: true }); // once: true sorgt dafür, dass der Listener nur einmal ausgeführt wird
