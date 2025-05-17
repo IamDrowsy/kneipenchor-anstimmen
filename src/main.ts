@@ -153,15 +153,20 @@ function setupVoiceFilter(): void {
 
   // --- Event-Listener für Abspieldauer-Eingabefeld (einzelne Töne) ---
   const playDurationInput = document.getElementById('play-duration-input') as HTMLInputElement;
-  if (playDurationInput) {
-    playDurationInput.addEventListener('change', function(this: HTMLInputElement) {
+  const playDurationValueDisplay = document.getElementById('play-duration-value') as HTMLSpanElement;
+
+  if (playDurationInput && playDurationValueDisplay) {
+    // Event listener for the range slider
+    playDurationInput.addEventListener('input', function(this: HTMLInputElement) {
       const newDuration = parseInt(this.value, 10);
       if (!isNaN(newDuration) && newDuration >= parseInt(this.min) && newDuration <= parseInt(this.max)) {
         individualNotePlayDuration = newDuration;
+        playDurationValueDisplay.textContent = newDuration.toString();
         saveAllSettings();
       } else {
         // Reset to current valid value if input is invalid
         this.value = individualNotePlayDuration.toString();
+        playDurationValueDisplay.textContent = individualNotePlayDuration.toString();
       }
     });
   }
@@ -228,9 +233,12 @@ function loadAllSettings(): void {
       individualNotePlayDuration = parsedPlayDuration;
     }
   }
+  // Update both the slider and its value display
   const playDurationInput = document.getElementById('play-duration-input') as HTMLInputElement;
-  if (playDurationInput) {
+  const playDurationValueDisplay = document.getElementById('play-duration-value') as HTMLSpanElement;
+  if (playDurationInput && playDurationValueDisplay) {
     playDurationInput.value = individualNotePlayDuration.toString();
+    playDurationValueDisplay.textContent = individualNotePlayDuration.toString();
   }
 }
 

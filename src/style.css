@@ -312,12 +312,31 @@ td:nth-child(5) .play-button { /* Bass was 4th, now 5th */
   color: #333;
 }
 
+.range-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between slider and value display */
+}
+
 .setting-input {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 120px; /* Adjust as needed */
   font-size: 0.9rem;
+}
+
+.setting-input.setting-range-slider {
+  flex-grow: 1; /* Allow slider to take available space */
+  width: auto; /* Override fixed width if previously set */
+  padding: 0; /* Range inputs often don't need padding like text boxes */
+  height: 20px; /* Adjust height for better touch target */
+}
+
+.range-slider-value {
+  font-weight: 500;
+  color: #333;
+  min-width: 35px; /* Ensure space for 4-digit numbers */
+  text-align: right;
 }
 
 .input-description {
