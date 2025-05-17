@@ -16,6 +16,7 @@ let allSongs: Song[] = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
+  setupFilterModal();
 });
 
 // Suchfunktionalität einrichten
@@ -119,9 +120,6 @@ function escapeRegExp(string: string): string {
 
 // Filter-Funktion einrichten
 function setupVoiceFilter(): void {
-  // Einklappbare Funktionalität hinzufügen
-  setupCollapsibleSections();
-
   // Filter-Einstellungen aus localStorage laden (falls vorhanden)
   loadFilterSettings();
 
@@ -274,53 +272,50 @@ function displaySongs(songs: Song[]): void {
   });
 }
 
-// Funktionalität für einklappbare Bereiche
-function setupCollapsibleSections(): void {
-  const collapsibleSections = document.querySelectorAll('.collapsible-section');
+// Filter Modal Funktionalität
+function setupFilterModal(): void {
+  const modal = document.getElementById('filter-modal') as HTMLElement;
+  const triggerButton = document.getElementById('filter-modal-trigger') as HTMLButtonElement;
+  const closeButton = document.getElementById('modal-close-button') as HTMLButtonElement;
 
-  collapsibleSections.forEach(section => {
-    const header = section.querySelector('.section-header');
-    const toggleButton = section.querySelector('.toggle-button');
-    const content = section.querySelector('.section-content');
+  if (!modal || !triggerButton || !closeButton) {
+    console.error('Filter modal elements not found. Modal functionality will be disabled.');
+    if (triggerButton) triggerButton.style.display = 'none'; // Hide trigger if modal is broken
+    return;
+  }
 
-    if (!header) return;
+  const openModal = () => {
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    // Focus the close button or first interactive element within the modal
+    closeButton.focus();
+  };
 
-    // Lädt gespeicherten Zustand (optional)
-    const sectionId = section.id || 'filter-section';
-    const isCollapsed = localStorage.getItem(`${sectionId}-collapsed`) === 'true';
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+    // Return focus to the button that opened the modal
+    triggerButton.focus();
+  };
 
-    // Initialen Zustand setzen
-    if (isCollapsed) {
-      section.classList.add('collapsed');
-      if (toggleButton instanceof HTMLElement) {
-        toggleButton.setAttribute('aria-expanded', 'false');
-      }
+  triggerButton.addEventListener('click', openModal);
+  closeButton.addEventListener('click', closeModal);
+
+  // Close modal if user clicks on the backdrop
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      closeModal();
     }
+  });
 
-    // Event-Listener für Klick auf Header oder Button
-    header.addEventListener('click', () => toggleSection(section));
-    if (toggleButton) {
-      toggleButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Verhindert doppeltes Auslösen
-        toggleSection(section);
-      });
+  // Close modal with Escape key
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closeModal();
     }
   });
 }
 
-// Funktion zum Umschalten des Bereichs
-function toggleSection(section: Element): void {
-  const isCollapsed = section.classList.toggle('collapsed');
-  const toggleButton = section.querySelector('.toggle-button');
-  const sectionId = section.id || 'filter-section';
-
-  if (toggleButton) {
-    toggleButton.setAttribute('aria-expanded', (!isCollapsed).toString());
-  }
-
-  // Zustand speichern (optional)
-  localStorage.setItem(`${sectionId}-collapsed`, isCollapsed.toString());
-}
 
 // Hilfsfunktion zum Erstellen eines Wiedergabe-Buttons
 function createPlayButton(note: SongNote, voice: Voice, songTitle: string, subVoice: string | null = null): HTMLButtonElement {
