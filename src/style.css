@@ -432,25 +432,11 @@ td:nth-child(4) .play-button.playing {
   cursor: wait;
 }
 
-
-/* Einklappbare Sektion */
-.collapsible-section {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  background-color: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
+/* Styles for section headers (e.g., in the filter modal) */
 .section-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 15px;
-  background-color: #f7f7f7;
-  border-radius: 8px 8px 0 0;
-  cursor: pointer;
-  user-select: none;
+  margin-bottom: 10px; /* Space between header and content */
 }
 
 .section-header h3 {
@@ -458,46 +444,6 @@ td:nth-child(4) .play-button.playing {
   font-size: 1rem;
   font-weight: 600;
   color: #333;
-}
-
-.toggle-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #666;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  padding: 0;
-}
-
-.arrow-icon {
-  display: inline-block;
-  transition: transform 0.3s ease;
-}
-
-.section-content {
-  max-height: 300px; /* Initiale Höhe, wird animiert */
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  padding: 15px;
-}
-
-/* Zustände für eingeklappten Bereich */
-.collapsible-section.collapsed .section-content {
-  max-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  border-top: none;
-}
-
-.collapsible-section.collapsed .arrow-icon {
-  transform: rotate(-90deg);
-}
-
-.collapsible-section.collapsed .section-header {
-  border-radius: 8px;
-  border-bottom: none;
 }
 
 /* Verbesserte Stimmgruppenfilter-Styles */
@@ -545,3 +491,99 @@ td:nth-child(4) .play-button.playing {
     gap: 8px;
   }
 }
+
+/* App Header for Title and Cogwheel */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem; /* Or your preferred spacing */
+}
+
+.app-header h1 {
+  margin: 0; /* Remove default h1 margin if needed */
+}
+
+/* Cogwheel Trigger Button */
+.filter-trigger-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem; /* Adjust size as needed */
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.filter-trigger-button svg {
+  width: 24px; /* Or your desired size */
+  height: 24px; /* Or your desired size */
+  vertical-align: middle; /* Helps with alignment */
+}
+
+
+.filter-trigger-button:hover {
+  opacity: 0.7;
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top */
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background-color: #fff; /* Or your app's background color for content */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  max-width: 500px; /* Adjust as needed */
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  color: #333; /* Adjust color as needed */
+}
+
+.modal-close-button:hover {
+  color: #000;
+}
+
+/* Ensure filter section within modal has appropriate styling */
+.modal .filter-section {
+  margin-top: 1rem; /* Add some space below the modal title/close button */
+}
+
+.modal .filter-section .section-header h3 {
+  margin-top: 0; /* Adjust if h3 inside modal needs different spacing */
+}
+
+/* .section-content within the modal doesn't need specific styles if 
+   .filter-section provides padding and .filter-options handles layout. */
+/* .modal .filter-section .section-content {} */
