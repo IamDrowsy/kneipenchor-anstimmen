@@ -2,8 +2,9 @@
     "title": "Say Yes",
     "notes": {
         "soprano": "G",
-        "alto": "D3",
+        "alto": "H3",
         "tenor": "G",
         "bass": "G"
-      }
+      },
+    "customChord": ["H3", "G", "D"]
 }

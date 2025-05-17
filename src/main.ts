@@ -362,19 +362,29 @@ function displaySongs(songs: Song[]): void {
       }
     });
     // --- "Akkord" Button ---
-    const allNotesForSong: SongNote[] = [];
-    voiceTypes.forEach(vt => {
-      const noteValue = song.notes[vt.key];
-      if (isSongNote(noteValue)) { // Single note string
-        if (noteValue !== '-') allNotesForSong.push(noteValue);
-      } else if (noteValue && typeof noteValue === 'object') { // Object with sub-notes like { hoch: 'C4', tief: 'G3' }
-        Object.values(noteValue).forEach(subNote => {
-          if (typeof subNote === 'string' && subNote !== '-') {
-            allNotesForSong.push(subNote);
-          }
-        });
-      }
-    });
+    let allNotesForSong: SongNote[];
+
+    // Check for customChord first
+    if (song.customChord && song.customChord.length > 0) {
+      allNotesForSong = song.customChord.filter(note => note !== '-'); // Use custom chord if provided and not empty
+      console.log(`Using custom chord for "${song.title}":`, allNotesForSong);
+    } else {
+      // Fallback to collecting notes from voices
+      allNotesForSong = [];
+      voiceTypes.forEach(vt => {
+        const noteValue = song.notes[vt.key];
+        if (isSongNote(noteValue)) { // Single note string
+          if (noteValue !== '-') allNotesForSong.push(noteValue);
+        } else if (noteValue && typeof noteValue === 'object') { // Object with sub-notes like { hoch: 'C4', tief: 'G3' }
+          Object.values(noteValue).forEach(subNote => {
+            if (typeof subNote === 'string' && subNote !== '-') {
+              allNotesForSong.push(subNote);
+            }
+          });
+        }
+      });
+    }
+
     const akkordButton = document.createElement('button');
     akkordButton.textContent = 'Akkord';
     akkordButton.className = 'play-button alle-button akkord-button';
