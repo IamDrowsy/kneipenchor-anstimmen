@@ -18,6 +18,14 @@ let allSongs: Song[] = [];
 let individualNotePlayDuration = 800; // Default value in ms for individual note playback
 const INDIVIDUAL_NOTE_PLAY_DURATION_STORAGE_KEY = 'individualNotePlayDurationSetting';
 
+// Short forms for voice types for button display
+const voiceShortForms: Record<Voice, string> = {
+  soprano: 'S',
+  alto: 'A',
+  tenor: 'T',
+  bass: 'B',
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   loadSongs();
   setupFilterModal();
@@ -282,7 +290,31 @@ function displaySongs(songs: Song[]): void {
     const alleButtonContainer = document.createElement('div');
     alleButtonContainer.className = 'button-group';
 
-    // Collect all playable notes for the current song
+    // Collect notes for sequential playback and their corresponding display labels for the button's static text
+    const notesForSequencePlayback: SongNote[] = [];
+    const sequenceDisplayLabels: string[] = [];
+
+    voiceTypes.forEach(vt => {
+      const noteValue = song.notes[vt.key];
+      const voiceShort = voiceShortForms[vt.key];
+
+      if (isSongNote(noteValue)) { // Single note string
+        if (noteValue !== '-') {
+          notesForSequencePlayback.push(noteValue);
+          sequenceDisplayLabels.push(voiceShort);
+        }
+      } else if (noteValue && typeof noteValue === 'object') { // Object with sub-notes
+        // Iterate entries to maintain a somewhat predictable order (e.g., 'hoch' then 'tief' if defined that way)
+        Object.entries(noteValue).forEach(([subKey, subNote]) => {
+          if (typeof subNote === 'string' && subNote !== '-') {
+            notesForSequencePlayback.push(subNote);
+            const subKeyShort = subKey.length > 0 ? subKey.substring(0, 1).toUpperCase() : ''; // e.g., H for hoch, T for tief
+            sequenceDisplayLabels.push(`${voiceShort}${subKeyShort}`);
+          }
+        });
+      }
+    });
+    // --- "Akkord" Button ---
     const allNotesForSong: SongNote[] = [];
     voiceTypes.forEach(vt => {
       const noteValue = song.notes[vt.key];
@@ -296,11 +328,10 @@ function displaySongs(songs: Song[]): void {
         });
       }
     });
-
-    // --- "Akkord" Button ---
     const akkordButton = document.createElement('button');
     akkordButton.textContent = 'Akkord';
     akkordButton.className = 'play-button alle-button akkord-button';
+    // Disable if no notes are available (allNotesForSong will be empty if all notes are '-')
     akkordButton.disabled = allNotesForSong.length === 0;
 
     akkordButton.addEventListener('click', async () => {
@@ -323,44 +354,44 @@ function displaySongs(songs: Song[]): void {
 
     // --- "Nacheinander" Button ---
     const nacheinanderButton = document.createElement('button');
-    nacheinanderButton.textContent = 'Nacheinander';
+    const nacheinanderButtonInitialText = sequenceDisplayLabels.length > 0 ? sequenceDisplayLabels.join(', ') : 'Nacheinander';
+    nacheinanderButton.textContent = nacheinanderButtonInitialText;
     nacheinanderButton.className = 'play-button alle-button nacheinander-button';
-    nacheinanderButton.disabled = allNotesForSong.length === 0;
+    nacheinanderButton.disabled = notesForSequencePlayback.length === 0;
 
     // Event listener for "Nacheinander" (Sequential) button
     nacheinanderButton.addEventListener('click', async () => {
       if (nacheinanderButton.disabled) return;
       nacheinanderButton.disabled = true; // Disable the button for the duration of the sequence
+      // The button text (e.g., "S, AH, T") remains static during playback.
 
-      const notesToPlaySequentially = allNotesForSong.filter(n => n !== '-');
       const DURATION_PER_NOTE = individualNotePlayDuration; // Use the single configurable duration
 
-      for (let i = 0; i < notesToPlaySequentially.length; i++) {
-        const note = notesToPlaySequentially[i];
+      for (let i = 0; i < notesForSequencePlayback.length; i++) {
+        const noteToPlay = notesForSequencePlayback[i];
 
+        // Visual pulse remains, text does not change
         audioManager.updatePlayingStatus(nacheinanderButton, true); // Start visual pulse for this note
 
         try {
-          await audioManager.playNote(note, DURATION_PER_NOTE); 
+          await audioManager.playNote(noteToPlay, DURATION_PER_NOTE);
         } catch (e) {
-          console.error(`Fehler beim Abspielen von ${note} in Sequenz für Lied "${song.title}".`, e);
+          console.error(`Fehler beim Abspielen von ${noteToPlay} in Sequenz für Lied "${song.title}".`, e);
           // Continue to the delay even if this note fails, to maintain timing for visuals
         }
 
         // Wait for DURATION_PER_NOTE. This allows the note to be heard
-        // and the visual pulse (which is 800ms long via updatePlayingStatus) to complete.
-        await new Promise(resolve => setTimeout(resolve, DURATION_PER_NOTE)); // Wait for the note's own duration
+        await new Promise(resolve => setTimeout(resolve, DURATION_PER_NOTE));
 
         audioManager.updatePlayingStatus(nacheinanderButton, false); // Stop visual pulse for this note
 
-        // If not the last note, add a tiny delay to ensure the animation can restart cleanly for the next note.
-        if (i < notesToPlaySequentially.length - 1) {
+        // If not the last note, add a tiny delay for separation / animation restart.
+        if (i < notesForSequencePlayback.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 50)); // 50ms brief pause
         }
       }
-
       // Re-enable the button after the entire sequence is complete
-      nacheinanderButton.disabled = allNotesForSong.length === 0;
+      nacheinanderButton.disabled = notesForSequencePlayback.length === 0;
     });
     alleButtonContainer.appendChild(nacheinanderButton);
 
