@@ -18,6 +18,10 @@ let allSongs: Song[] = [];
 let individualNotePlayDuration = 800; // Default value in ms for individual note playback
 const INDIVIDUAL_NOTE_PLAY_DURATION_STORAGE_KEY = 'individualNotePlayDurationSetting';
 
+// Globale Variable für Lautstärke
+let currentVolumePercent = 90; // Default volume 0-100 (90 corresponds to approx -6dB)
+const VOLUME_SETTING_STORAGE_KEY = 'volumeSetting';
+
 // Short forms for voice types for button display
 const voiceShortForms: Record<Voice, string> = {
   soprano: 'S',
@@ -132,7 +136,7 @@ function escapeRegExp(string: string): string {
 
 // Filter-Funktion einrichten
 function setupVoiceFilter(): void {
-  // Alle Einstellungen laden (Filter und Notendauer)
+  // Alle Einstellungen laden (Filter, Notendauer, Lautstärke)
   loadAllSettings();
 
   // --- Event-Listener für Filtercheckboxen ---
@@ -170,9 +174,26 @@ function setupVoiceFilter(): void {
       }
     });
   }
+
+  // --- Event-Listener für Lautstärke-Regler ---
+  const volumeInput = document.getElementById('volume-control-input') as HTMLInputElement;
+  const volumeValueDisplay = document.getElementById('volume-control-value') as HTMLSpanElement;
+
+  if (volumeInput && volumeValueDisplay) {
+    volumeInput.addEventListener('input', function(this: HTMLInputElement) {
+      const newVolume = parseInt(this.value, 10);
+      // Range input inherently constrains values between min and max
+      currentVolumePercent = newVolume;
+      volumeValueDisplay.textContent = newVolume.toString();
+      audioManager.setVolume(currentVolumePercent); // Update AudioManager
+      saveAllSettings(); // Save the new volume setting
+    });
+  }
 }
 
-// Sichtbarkeit einer Stimmgruppe umschalten
+
+
+// Sichtbarkeit einer Stimmgruppe umschalten (no changes to this function)
 function toggleVoiceVisibility(voiceKey: string, isVisible: boolean): void {
   console.log(`Toggling visibility for ${voiceKey}: ${isVisible}`);
 
@@ -193,7 +214,7 @@ function toggleVoiceVisibility(voiceKey: string, isVisible: boolean): void {
   });
 }
 
-// Alle Einstellungen (Filter und Notendauer) im localStorage speichern
+// Alle Einstellungen (Filter, Notendauer, Lautstärke) im localStorage speichern
 function saveAllSettings(): void {
   // Filter-Einstellungen speichern
   const filterSettings: Record<string, boolean> = {};
@@ -205,12 +226,14 @@ function saveAllSettings(): void {
   });
   localStorage.setItem('voiceFilterSettings', JSON.stringify(filterSettings));
 
-  // Abspieldauer für einzelne Töne speichern (dies ist jetzt die einzige Dauer-Einstellung)
   // Abspieldauer für einzelne Töne speichern
   localStorage.setItem(INDIVIDUAL_NOTE_PLAY_DURATION_STORAGE_KEY, individualNotePlayDuration.toString());
+
+  // Lautstärke speichern
+  localStorage.setItem(VOLUME_SETTING_STORAGE_KEY, currentVolumePercent.toString());
 }
 
-// Alle Einstellungen (Filter und Notendauer) aus localStorage laden
+// Alle Einstellungen (Filter, Notendauer, Lautstärke) aus localStorage laden
 function loadAllSettings(): void {
   // --- Filter-Einstellungen laden ---
   // Filter-Einstellungen laden
@@ -240,6 +263,22 @@ function loadAllSettings(): void {
     playDurationInput.value = individualNotePlayDuration.toString();
     playDurationValueDisplay.textContent = individualNotePlayDuration.toString();
   }
+
+  // --- Lautstärke laden ---
+  const savedVolume = localStorage.getItem(VOLUME_SETTING_STORAGE_KEY);
+  if (savedVolume) {
+    const parsedVolume = parseInt(savedVolume, 10);
+    if (!isNaN(parsedVolume) && parsedVolume >= 0 && parsedVolume <= 100) {
+      currentVolumePercent = parsedVolume;
+    }
+  }
+  const volumeInput = document.getElementById('volume-control-input') as HTMLInputElement;
+  const volumeValueDisplay = document.getElementById('volume-control-value') as HTMLSpanElement;
+  if (volumeInput && volumeValueDisplay) {
+    volumeInput.value = currentVolumePercent.toString();
+    volumeValueDisplay.textContent = currentVolumePercent.toString();
+  }
+  audioManager.setVolume(currentVolumePercent); // Apply loaded/default volume to AudioManager
 }
 
 
@@ -538,6 +577,7 @@ function createPlayButton(note: SongNote, voice: Voice, songTitle: string, subVo
 document.addEventListener('click', async () => {
   if (!audioManager.initialized) {
     console.log('Initialisiere Audio nach Benutzerinteraktion');
-    await audioManager.initialize();
+    // AudioManager will use its currentVolumePercent, which was set by loadAllSettings()
+    await audioManager.initialize(); 
   }
 }, { once: true }); // once: true sorgt dafür, dass der Listener nur einmal ausgeführt wird
