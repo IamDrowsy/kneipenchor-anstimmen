@@ -364,6 +364,13 @@ function displaySongs(songs: Song[]): void {
     // --- "Akkord" Button ---
     let allNotesForSong: SongNote[];
 
+    let melodyNodesForSong: SongNote[] = [];
+    // Check for customMoldy
+    if (song.customMelody && song.customMelody.length > 0) {
+      melodyNodesForSong = song.customMelody.filter(note => note !== '-');
+      console.log(`Found custom melody for "${song.title}":`, melodyNodesForSong)
+    }
+
     // Check for customChord first
     if (song.customChord && song.customChord.length > 0) {
       allNotesForSong = song.customChord.filter(note => note !== '-'); // Use custom chord if provided and not empty
@@ -408,6 +415,32 @@ function displaySongs(songs: Song[]): void {
       }, individualNotePlayDuration); // Use configurable duration
     });
     alleButtonContainer.appendChild(akkordButton);
+
+    // Melody Button
+    if (melodyNodesForSong.length !== 0) {
+      const melodyButton = document.createElement('button');
+      melodyButton.textContent = 'Melodie';
+      melodyButton.className = 'play-button alle-button melody-button';
+      melodyButton.addEventListener('click', async () => {
+        if (melodyButton.disabled) return;
+        melodyButton.disabled = true;
+        for (let i = 0; i < melodyNodesForSong.length; i++) {
+          const noteToPlay = melodyNodesForSong[i];
+          audioManager.updatePlayingStatus(melodyButton, true);
+          try {
+            await audioManager.playNote(noteToPlay, individualNotePlayDuration);
+          } catch (e) {
+            console.error(`Fehler beim Abspielen von ${noteToPlay} in der Melodie-Versuch für "${song.title}.`, e);
+          }
+          await new Promise(resolve => setTimeout(resolve, individualNotePlayDuration));
+          if (i < melodyNodesForSong.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+        melodyButton.disabled = false;
+      });
+      alleButtonContainer.appendChild(melodyButton);
+    }
 
     // --- "Nacheinander" Button ---
     const nacheinanderButton = document.createElement('button');

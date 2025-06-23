@@ -1,0 +1,10 @@
+{
+    "title": "Kids",
+    "notes": {
+        "soprano": "E",
+        "alto": "E",
+        "tenor": "E",
+        "bass": "E"
+      },
+    "customMelody": ["E", "F#", "G#", "H", "C#5"]
+}
