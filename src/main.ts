@@ -43,6 +43,16 @@ function setupSearch(): void {
 
   if (!searchInput || !clearButton || !searchResults) return;
 
+  // URL-Parameter prüfen und Suchfeld füllen
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchParam = urlParams.get('search');
+
+  if (searchParam) {
+    searchInput.value = searchParam;
+    clearButton.classList.add('visible');
+    performSearch(searchParam.trim().toLowerCase());
+  }
+
   // Event-Listener für die Eingabe
   searchInput.addEventListener('input', function() {
     const searchTerm = this.value.trim().toLowerCase();
