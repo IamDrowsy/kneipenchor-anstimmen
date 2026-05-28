@@ -1,0 +1,11 @@
+{
+    "title": "Bleib dir nicht treu",
+    "notes": {
+        "soprano": "A",
+        "alto": "F#",
+        "tenor": "G#",
+        "bass": "D"
+      },
+	"customChord": ["A", "F#", "D"]  
+	
+}

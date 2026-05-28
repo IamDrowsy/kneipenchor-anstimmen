@@ -1,0 +1,10 @@
+{
+    "title": "Parkplatzregen",
+    "notes": {
+        "soprano": "B",
+        "alto": "F",
+        "tenor": "B",
+        "bass": "B3"
+      },
+  "customChord": ["B3", "D", "F", "B"]
+}
